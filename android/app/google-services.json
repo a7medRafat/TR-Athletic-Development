@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1005354509282",
+    "project_id": "tr-athletic-development",
+    "storage_bucket": "tr-athletic-development.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005354509282:android:20d86e57431d768b124fbb",
+        "android_client_info": {
+          "package_name": "com.example.tr_atheletic_development"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDV0p9tbVeKTRx2aMluqcLkXmBKZb5LohA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
