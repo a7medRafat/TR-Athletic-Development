@@ -16,7 +16,6 @@ class RegisterFullNameFieldWidget extends StatelessWidget {
       hintText: AppStrings.fullNameHint,
       controller: controller,
       textInputAction: TextInputAction.next,
-      prefixIcon: const Icon(Icons.person_outline),
       validator: (value) {
         if (value == null || value.trim().isEmpty) return AppStrings.fullNameRequired;
         return null;

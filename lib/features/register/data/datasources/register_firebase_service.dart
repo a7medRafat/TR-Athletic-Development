@@ -14,6 +14,10 @@ class RegisterFirebaseService {
     required String password,
     required String fullName,
     required String phoneNumber,
+    int? age,
+    double? weight,
+    double? height,
+    String? gender,
   }) async {
     final credential = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -26,6 +30,10 @@ class RegisterFirebaseService {
       email: email,
       fullName: fullName,
       phoneNumber: phoneNumber,
+      age: age,
+      weight: weight,
+      height: height,
+      gender: gender,
       createdAt: DateTime.now(),
     );
     await _firestore.collection('users').doc(uid).set(model.toMap());

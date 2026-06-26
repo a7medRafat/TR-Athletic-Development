@@ -16,7 +16,6 @@ class RegisterEmailFieldWidget extends StatelessWidget {
       hintText: AppStrings.emailHint,
       controller: controller,
       textInputAction: TextInputAction.next,
-      prefixIcon: const Icon(Icons.email_outlined),
       validator: (value) {
         if (value == null || value.trim().isEmpty) return AppStrings.emailRequired;
         if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value.trim())) {

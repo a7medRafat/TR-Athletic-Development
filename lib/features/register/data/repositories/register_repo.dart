@@ -12,6 +12,10 @@ class RegisterRepo {
     required String password,
     required String fullName,
     required String phoneNumber,
+    int? age,
+    double? weight,
+    double? height,
+    String? gender,
   }) async {
     try {
       final uid = await _service.register(
@@ -19,6 +23,10 @@ class RegisterRepo {
         password: password,
         fullName: fullName,
         phoneNumber: phoneNumber,
+        age: age,
+        weight: weight,
+        height: height,
+        gender: gender,
       );
       return ApiResult.success(uid);
     } catch (e) {

@@ -35,7 +35,10 @@ class _PreTrainingView extends StatelessWidget {
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                  const Icon(
+                    Icons.check_circle_outline_rounded,
+                    color: Colors.white,
+                  ),
                   const SizedBox(width: 10),
                   Text(AppStrings.submitSuccess),
                 ],
@@ -73,9 +76,7 @@ class _PreTrainingView extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<PreTrainingCubit>();
         return Scaffold(
-          appBar: AppBar(
-            title: Text(AppStrings.preTrainingTitle),
-          ),
+          appBar: AppBar(title: Text(AppStrings.preTrainingTitle)),
           body: state.isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
@@ -87,8 +88,8 @@ class _PreTrainingView extends StatelessWidget {
                         title: AppStrings.sleepQuality,
                         value: state.sleepQuality.toDouble(),
                         min: 1,
-                        max: 5,
-                        divisions: 4,
+                        max: 10,
+                        divisions: 9,
                         minLabel: AppStrings.veryBad,
                         maxLabel: AppStrings.excellent,
                         onChanged: (v) => cubit.updateSleepQuality(v.round()),
@@ -165,17 +166,7 @@ class _PreTrainingView extends StatelessWidget {
                           value: state.painLocation,
                           onChanged: cubit.updatePainLocation,
                         ),
-                      LabeledSliderWidget(
-                        title: AppStrings.readinessToTrain,
-                        value: state.readinessToTrain.toDouble(),
-                        min: 1,
-                        max: 10,
-                        divisions: 9,
-                        minLabel: AppStrings.low,
-                        maxLabel: AppStrings.high,
-                        onChanged: (v) =>
-                            cubit.updateReadinessToTrain(v.round()),
-                      ),
+
                       SizedBox(height: 16.h),
                       _SubmitButton(onPressed: cubit.submit),
                     ],

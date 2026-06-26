@@ -192,6 +192,25 @@ class AppStrings {
   static String get noChanges => 'no_changes'.tr();
   static String get signInToContinue => 'sign_in_to_continue'.tr();
 
+  // Register — profile fields
+  static String get age => 'age'.tr();
+  static String get ageHint => 'age_hint'.tr();
+  static String get ageRequired => 'age_required'.tr();
+  static String get invalidAge => 'invalid_age'.tr();
+  static String get weightKg => 'weight_kg'.tr();
+  static String get weightHint => 'weight_hint'.tr();
+  static String get weightRequired => 'weight_required'.tr();
+  static String get invalidWeight => 'invalid_weight'.tr();
+  static String get heightCm => 'height_cm'.tr();
+  static String get heightHint => 'height_hint'.tr();
+  static String get heightRequired => 'height_required'.tr();
+  static String get invalidHeight => 'invalid_height'.tr();
+  static String get gender => 'gender'.tr();
+  static String get genderRequired => 'gender_required'.tr();
+  static String get male => 'male'.tr();
+  static String get female => 'female'.tr();
+  static String get otherGender => 'other_gender'.tr();
+
   // Stats with params
   static String thresholdLabel(int value) =>
       'threshold_label'.tr(namedArgs: {'value': '$value'});

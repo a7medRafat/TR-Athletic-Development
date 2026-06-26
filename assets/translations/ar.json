@@ -169,5 +169,23 @@
 
   "threshold_label": "الحد: {value}/100",
   "percent_ready": "{percent}% جاهز",
-  "sleep_quality_display": "جودة {quality}/5"
+  "sleep_quality_display": "جودة {quality}/5",
+
+  "age": "العمر",
+  "age_hint": "عمرك",
+  "age_required": "العمر مطلوب",
+  "invalid_age": "أدخل عمراً صحيحاً (١-١٢٠)",
+  "weight_kg": "الوزن (كغ)",
+  "weight_hint": "مثال: 70.5",
+  "weight_required": "الوزن مطلوب",
+  "invalid_weight": "أدخل وزناً صحيحاً",
+  "height_cm": "الطول (سم)",
+  "height_hint": "مثال: 175",
+  "height_required": "الطول مطلوب",
+  "invalid_height": "أدخل طولاً صحيحاً",
+  "gender": "الجنس",
+  "gender_required": "يرجى اختيار الجنس",
+  "male": "ذكر",
+  "female": "أنثى",
+  "other_gender": "آخر"
 }

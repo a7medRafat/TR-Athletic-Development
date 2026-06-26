@@ -169,5 +169,23 @@
 
   "threshold_label": "Threshold: {value}/100",
   "percent_ready": "{percent}% ready",
-  "sleep_quality_display": "Quality {quality}/5"
+  "sleep_quality_display": "Quality {quality}/5",
+
+  "age": "Age",
+  "age_hint": "Your age",
+  "age_required": "Age is required",
+  "invalid_age": "Enter a valid age (1–120)",
+  "weight_kg": "Weight (kg)",
+  "weight_hint": "e.g. 70.5",
+  "weight_required": "Weight is required",
+  "invalid_weight": "Enter a valid weight",
+  "height_cm": "Height (cm)",
+  "height_hint": "e.g. 175",
+  "height_required": "Height is required",
+  "invalid_height": "Enter a valid height",
+  "gender": "Gender",
+  "gender_required": "Please select your gender",
+  "male": "Male",
+  "female": "Female",
+  "other_gender": "Other"
 }

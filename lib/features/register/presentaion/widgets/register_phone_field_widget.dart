@@ -16,7 +16,6 @@ class RegisterPhoneFieldWidget extends StatelessWidget {
       hintText: AppStrings.phoneHint,
       controller: controller,
       textInputAction: TextInputAction.next,
-      prefixIcon: const Icon(Icons.phone_outlined),
       validator: (value) {
         if (value == null || value.trim().isEmpty) return AppStrings.phoneRequired;
         return null;

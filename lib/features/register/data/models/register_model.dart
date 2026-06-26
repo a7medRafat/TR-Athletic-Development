@@ -6,6 +6,10 @@ class RegisterModel {
   final String email;
   final String fullName;
   final String phoneNumber;
+  final int? age;
+  final double? weight;
+  final double? height;
+  final String? gender;
   final String role;
   final String status;
   final DateTime createdAt;
@@ -16,6 +20,10 @@ class RegisterModel {
     required this.email,
     required this.fullName,
     required this.phoneNumber,
+    this.age,
+    this.weight,
+    this.height,
+    this.gender,
     this.role = 'user',
     this.status = 'pending',
     required this.createdAt,
@@ -26,6 +34,10 @@ class RegisterModel {
         'email': email,
         'fullName': fullName,
         'phoneNumber': phoneNumber,
+        if (age != null) 'age': age,
+        if (weight != null) 'weight': weight,
+        if (height != null) 'height': height,
+        if (gender != null) 'gender': gender,
         'role': role,
         'status': status,
         'createdAt': Timestamp.fromDate(createdAt),
@@ -38,6 +50,10 @@ class RegisterModel {
         email: map['email'] as String,
         fullName: map['fullName'] as String,
         phoneNumber: map['phoneNumber'] as String,
+        age: (map['age'] as num?)?.toInt(),
+        weight: (map['weight'] as num?)?.toDouble(),
+        height: (map['height'] as num?)?.toDouble(),
+        gender: map['gender'] as String?,
         role: (map['role'] as String?) ?? 'user',
         status: (map['status'] as String?) ?? 'pending',
         createdAt: (map['createdAt'] as Timestamp).toDate(),
