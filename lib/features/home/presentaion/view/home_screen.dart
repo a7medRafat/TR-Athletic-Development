@@ -39,6 +39,47 @@ class _HomeView extends StatelessWidget {
     return '?';
   }
 
+  Future<void> _openEditProfile(
+    BuildContext context,
+    SettingsCubit cubit,
+    UserProfileModel? profile,
+  ) async {
+    final updated = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => UpdateProfileScreen(profile: profile)),
+    );
+    if (updated == true && context.mounted) {
+      cubit.loadProfile();
+    }
+  }
+
+  void _showLogoutConfirm(BuildContext context, SettingsCubit cubit) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        title: const Text(AppStrings.logout),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              await cubit.signOut();
+            },
+            child: Text(
+              AppStrings.logout,
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
@@ -46,6 +87,7 @@ class _HomeView extends StatelessWidget {
         final displayName = state.profile?.fullName;
         final email = state.email;
         final initials = _initials(displayName, email);
+        final cubit = context.read<SettingsCubit>();
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -54,6 +96,8 @@ class _HomeView extends StatelessWidget {
             email: email,
             initials: initials,
             profile: state.profile,
+            onEditProfile: () => _openEditProfile(context, cubit, state.profile),
+            onLogoutRequested: () => _showLogoutConfirm(context, cubit),
           ),
           appBar: AppBar(
             backgroundColor: AppColors.surface,
@@ -251,41 +295,17 @@ class _AppDrawer extends StatelessWidget {
   final String? email;
   final String initials;
   final UserProfileModel? profile;
+  final VoidCallback onEditProfile;
+  final VoidCallback onLogoutRequested;
 
   const _AppDrawer({
     required this.displayName,
     required this.email,
     required this.initials,
     required this.profile,
+    required this.onEditProfile,
+    required this.onLogoutRequested,
   });
-
-  void _confirmLogout(BuildContext context) {
-    final cubit = context.read<SettingsCubit>();
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text(AppStrings.logout),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(ctx).pop();
-              await cubit.signOut();
-            },
-            child: Text(
-              AppStrings.logout,
-              style: const TextStyle(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -353,17 +373,9 @@ class _AppDrawer extends StatelessWidget {
                 ),
               ),
               trailing: Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20.sp),
-              onTap: () async {
+              onTap: () {
                 Navigator.of(context).pop();
-                final updated = await Navigator.push<bool>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => UpdateProfileScreen(profile: profile),
-                  ),
-                );
-                if (updated == true && context.mounted) {
-                  context.read<SettingsCubit>().loadProfile();
-                }
+                onEditProfile();
               },
             ),
             Divider(indent: 16.w, endIndent: 16.w, color: AppColors.border),
@@ -387,7 +399,7 @@ class _AppDrawer extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.of(context).pop();
-                _confirmLogout(context);
+                onLogoutRequested();
               },
             ),
             const Spacer(),

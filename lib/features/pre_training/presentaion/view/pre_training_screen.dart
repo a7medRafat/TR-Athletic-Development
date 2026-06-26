@@ -5,11 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
-import '../logic/pre_training_cubit.dart';
-import '../logic/pre_training_state.dart';
 import '../../../../core/widgets/labeled_slider_widget.dart';
 import '../../../../core/widgets/pain_input_widget.dart';
 import '../../../../core/widgets/radio_question_widget.dart';
+import '../logic/pre_training_cubit.dart';
+import '../logic/pre_training_state.dart';
 
 class PreTrainingScreen extends StatelessWidget {
   const PreTrainingScreen({super.key});
@@ -33,19 +33,39 @@ class _PreTrainingView extends StatelessWidget {
         if (state.isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(AppStrings.submitSuccess),
+              content: const Row(
+                children: [
+                  Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                  SizedBox(width: 10),
+                  Text(AppStrings.submitSuccess),
+                ],
+              ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              margin: EdgeInsets.all(16.w),
             ),
           );
-          context.read<PreTrainingCubit>().reset();
+          Navigator.of(context).pop();
         }
         if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.errorMessage!),
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline_rounded, color: Colors.white),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(state.errorMessage!)),
+                ],
+              ),
               backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              margin: EdgeInsets.all(16.w),
             ),
           );
         }
@@ -63,7 +83,6 @@ class _PreTrainingView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Sleep Quality: 1 → 5
                       LabeledSliderWidget(
                         title: AppStrings.sleepQuality,
                         value: state.sleepQuality.toDouble(),
@@ -74,8 +93,6 @@ class _PreTrainingView extends StatelessWidget {
                         maxLabel: AppStrings.excellent,
                         onChanged: (v) => cubit.updateSleepQuality(v.round()),
                       ),
-
-                      // Hours of Sleep: 0 → 12
                       LabeledSliderWidget(
                         title: AppStrings.hoursOfSleep,
                         value: state.hoursOfSleep,
@@ -88,8 +105,6 @@ class _PreTrainingView extends StatelessWidget {
                             '${v.toStringAsFixed(v == v.roundToDouble() ? 0 : 1)} hrs',
                         onChanged: (v) => cubit.updateHoursOfSleep(v),
                       ),
-
-                      // Fatigue Level: 1 → 10
                       LabeledSliderWidget(
                         title: AppStrings.fatigueLevel,
                         value: state.fatigueLevel.toDouble(),
@@ -100,8 +115,6 @@ class _PreTrainingView extends StatelessWidget {
                         maxLabel: AppStrings.high,
                         onChanged: (v) => cubit.updateFatigueLevel(v.round()),
                       ),
-
-                      // Muscle Soreness (DOMS): 1 → 10
                       LabeledSliderWidget(
                         title: AppStrings.muscleSoreness,
                         value: state.muscleSoreness.toDouble(),
@@ -112,8 +125,6 @@ class _PreTrainingView extends StatelessWidget {
                         maxLabel: AppStrings.high,
                         onChanged: (v) => cubit.updateMuscleSoreness(v.round()),
                       ),
-
-                      // Mood: 1 → 5
                       LabeledSliderWidget(
                         title: AppStrings.mood,
                         value: state.mood.toDouble(),
@@ -124,8 +135,6 @@ class _PreTrainingView extends StatelessWidget {
                         maxLabel: AppStrings.excellent,
                         onChanged: (v) => cubit.updateMood(v.round()),
                       ),
-
-                      // Stress Level: 1 → 10
                       LabeledSliderWidget(
                         title: AppStrings.stressLevel,
                         value: state.stressLevel.toDouble(),
@@ -136,8 +145,6 @@ class _PreTrainingView extends StatelessWidget {
                         maxLabel: AppStrings.high,
                         onChanged: (v) => cubit.updateStressLevel(v.round()),
                       ),
-
-                      // Energy Level: 1 → 10
                       LabeledSliderWidget(
                         title: AppStrings.energyLevel,
                         value: state.energyLevel.toDouble(),
@@ -148,22 +155,16 @@ class _PreTrainingView extends StatelessWidget {
                         maxLabel: AppStrings.high,
                         onChanged: (v) => cubit.updateEnergyLevel(v.round()),
                       ),
-
-                      // Pain / Injury: Yes / No
                       RadioQuestionWidget(
                         question: AppStrings.painOrInjury,
                         value: state.hasPainOrInjury,
                         onChanged: cubit.updateHasPainOrInjury,
                       ),
-
-                      // Pain location (conditional)
                       if (state.hasPainOrInjury)
                         PainInputWidget(
                           value: state.painLocation,
                           onChanged: cubit.updatePainLocation,
                         ),
-
-                      // Readiness to Train: 1 → 10
                       LabeledSliderWidget(
                         title: AppStrings.readinessToTrain,
                         value: state.readinessToTrain.toDouble(),
@@ -175,19 +176,67 @@ class _PreTrainingView extends StatelessWidget {
                         onChanged: (v) =>
                             cubit.updateReadinessToTrain(v.round()),
                       ),
-
-                      SizedBox(height: 8.h),
-
-                      // Submit
-                      ElevatedButton(
-                        onPressed: () => cubit.submit(),
-                        child: const Text(AppStrings.submit),
-                      ),
+                      SizedBox(height: 16.h),
+                      _SubmitButton(onPressed: cubit.submit),
                     ],
                   ),
                 ),
         );
       },
+    );
+  }
+}
+
+class _SubmitButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _SubmitButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 54.h,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, AppColors.primaryDark],
+        ),
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.32),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14.r),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(14.r),
+          splashColor: Colors.white.withValues(alpha: 0.2),
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.send_rounded, color: Colors.white, size: 18.sp),
+                SizedBox(width: 8.w),
+                Text(
+                  AppStrings.submit,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

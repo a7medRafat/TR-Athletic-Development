@@ -34,19 +34,39 @@ class _PostTrainingView extends StatelessWidget {
         if (state.isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(AppStrings.submitSuccess),
+              content: const Row(
+                children: [
+                  Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                  SizedBox(width: 10),
+                  Text(AppStrings.submitSuccess),
+                ],
+              ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              margin: EdgeInsets.all(16.w),
             ),
           );
-          context.read<PostTrainingCubit>().reset();
+          Navigator.of(context).pop();
         }
         if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.errorMessage!),
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline_rounded, color: Colors.white),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(state.errorMessage!)),
+                ],
+              ),
               backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              margin: EdgeInsets.all(16.w),
             ),
           );
         }
@@ -64,7 +84,6 @@ class _PostTrainingView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // RPE: 1 → 10
                       LabeledSliderWidget(
                         title: AppStrings.rpe,
                         value: state.rpe.toDouble(),
@@ -75,36 +94,26 @@ class _PostTrainingView extends StatelessWidget {
                         maxLabel: 'Max Effort',
                         onChanged: (v) => cubit.updateRpe(v.round()),
                       ),
-
-                      // Did you complete the workout?
                       RadioQuestionWidget(
                         question: AppStrings.completedWorkout,
                         value: state.completedWorkout,
                         onChanged: cubit.updateCompletedWorkout,
                       ),
-
-                      // Did you feel pain?
                       RadioQuestionWidget(
                         question: AppStrings.feltPain,
                         value: state.feltPain,
                         onChanged: cubit.updateFeltPain,
                       ),
-
-                      // Pain location (conditional)
                       if (state.feltPain)
                         PainInputWidget(
                           value: state.painLocation,
                           onChanged: cubit.updatePainLocation,
                         ),
-
-                      // Did injury happen?
                       RadioQuestionWidget(
                         question: AppStrings.injuryOccurred,
                         value: state.injury,
                         onChanged: cubit.updateInjury,
                       ),
-
-                      // Current Fatigue: 1 → 5
                       LabeledSliderWidget(
                         title: AppStrings.currentFatigue,
                         value: state.fatigue.toDouble(),
@@ -115,25 +124,71 @@ class _PostTrainingView extends StatelessWidget {
                         maxLabel: AppStrings.high,
                         onChanged: (v) => cubit.updateFatigue(v.round()),
                       ),
-
-                      // Notes (max 500 chars)
                       NotesFieldWidget(
                         value: state.notes,
                         onChanged: cubit.updateNotes,
                       ),
-
-                      SizedBox(height: 8.h),
-
-                      // Submit
-                      ElevatedButton(
-                        onPressed: () => cubit.submit(),
-                        child: const Text(AppStrings.submit),
-                      ),
+                      SizedBox(height: 16.h),
+                      _SubmitButton(onPressed: cubit.submit),
                     ],
                   ),
                 ),
         );
       },
+    );
+  }
+}
+
+class _SubmitButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _SubmitButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 54.h,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.accent, Color(0xFFE85A20)],
+        ),
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.accent.withValues(alpha: 0.32),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14.r),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(14.r),
+          splashColor: Colors.white.withValues(alpha: 0.2),
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.send_rounded, color: Colors.white, size: 18.sp),
+                SizedBox(width: 8.w),
+                Text(
+                  AppStrings.submit,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
