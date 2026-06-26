@@ -12,6 +12,7 @@ class AdminUserModel {
   final String? approvedBy;
   final String? rejectionReason;
   final DateTime? disabledAt;
+  final int? lastReadinessScore;
 
   const AdminUserModel({
     required this.uid,
@@ -25,6 +26,7 @@ class AdminUserModel {
     this.approvedBy,
     this.rejectionReason,
     this.disabledAt,
+    this.lastReadinessScore,
   });
 
   bool get isAdmin => role == 'admin';
@@ -57,6 +59,7 @@ class AdminUserModel {
       approvedBy: map['approvedBy'] as String?,
       rejectionReason: map['rejectionReason'] as String?,
       disabledAt: _ts(map['disabledAt']),
+      lastReadinessScore: (map['lastReadinessScore'] as num?)?.toInt(),
     );
   }
 }

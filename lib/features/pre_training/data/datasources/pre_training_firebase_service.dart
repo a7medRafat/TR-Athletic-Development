@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/readiness_calculator.dart';
 import '../models/pre_training_model.dart';
 
 class PreTrainingFirebaseService {
@@ -11,6 +12,14 @@ class PreTrainingFirebaseService {
 
   Future<String> submit(PreTrainingModel model) async {
     final docRef = await _firestore.collection(_collection).add(model.toMap());
+
+    // Keep the user's latest readiness score on their profile for quick access
+    final score = ReadinessCalculator.calculate(model);
+    await _firestore.collection('users').doc(model.uid).update({
+      'lastReadinessScore': score,
+      'lastSessionAt': FieldValue.serverTimestamp(),
+    });
+
     return docRef.id;
   }
 

@@ -41,16 +41,6 @@ class PendingApprovalScreen extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              SizedBox(height: 12.h),
-              Text(
-                AppStrings.pendingSubtitle,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.textSecondary,
-                  height: 1.6,
-                ),
-              ),
               SizedBox(height: 20.h),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -60,8 +50,11 @@ class PendingApprovalScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline_rounded,
-                        color: AppColors.primary, size: 18.sp),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: AppColors.primary,
+                      size: 18.sp,
+                    ),
                     SizedBox(width: 10.w),
                     Expanded(
                       child: Text(
@@ -79,8 +72,11 @@ class PendingApprovalScreen extends StatelessWidget {
               SizedBox(height: 40.h),
               TextButton.icon(
                 onPressed: () => FirebaseAuth.instance.signOut(),
-                icon: Icon(Icons.logout_rounded,
-                    size: 18.sp, color: AppColors.textSecondary),
+                icon: Icon(
+                  Icons.logout_rounded,
+                  size: 18.sp,
+                  color: AppColors.textSecondary,
+                ),
                 label: Text(
                   AppStrings.logout,
                   style: TextStyle(

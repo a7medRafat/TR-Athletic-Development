@@ -77,7 +77,7 @@ class UpdateProfileSubmitButtonWidget extends StatelessWidget {
                             SizedBox(width: 8.w),
                           ],
                           Text(
-                            hasChanges ? AppStrings.saveChanges : 'No changes',
+                            hasChanges ? AppStrings.saveChanges : AppStrings.noChanges,
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w600,

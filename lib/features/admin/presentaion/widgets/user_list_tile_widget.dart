@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_strings.dart';
+import '../../../../core/utils/readiness_calculator.dart';
 import '../../data/models/admin_user_model.dart';
 import 'status_badge_widget.dart';
 
@@ -20,6 +22,10 @@ class UserListTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDisabled = user.isDisabled;
+    final score = user.lastReadinessScore;
+    final hasScore = score != null;
+    final ready = hasScore && ReadinessCalculator.isReady(score);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -28,6 +34,9 @@ class UserListTileWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(14.r),
+          border: (hasScore && !ready)
+              ? Border.all(color: AppColors.error, width: 1.5)
+              : null,
           boxShadow: [
             BoxShadow(
               color: AppColors.cardShadow,
@@ -38,43 +47,94 @@ class UserListTileWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor:
-                  isDisabled ? AppColors.border : AppColors.primaryLight,
-              radius: 20.r,
-              child: Text(
-                user.initials,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w700,
-                  color:
-                      isDisabled ? AppColors.textSecondary : AppColors.primary,
+            // Avatar with readiness ring
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                CircleAvatar(
+                  backgroundColor:
+                      isDisabled ? AppColors.border : AppColors.primaryLight,
+                  radius: 20.r,
+                  child: Text(
+                    user.initials,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      color: isDisabled
+                          ? AppColors.textSecondary
+                          : AppColors.primary,
+                    ),
+                  ),
                 ),
-              ),
+                if (hasScore)
+                  Positioned(
+                    bottom: -2,
+                    right: -2,
+                    child: Container(
+                      width: 12.r,
+                      height: 12.r,
+                      decoration: BoxDecoration(
+                        color: ready ? AppColors.success : AppColors.error,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: AppColors.surface, width: 1.5),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             SizedBox(width: 12.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    user.fullName.isNotEmpty ? user.fullName : user.email,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        user.fullName.isNotEmpty ? user.fullName : user.email,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      if (user.isApproved) ...[
+                        SizedBox(width: 4.w),
+                        Icon(Icons.verified_rounded,
+                            size: 14.sp, color: AppColors.success),
+                      ],
+                    ],
                   ),
-                  Text(
-                    user.email,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: AppColors.textSecondary,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        user.email,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      if (hasScore) ...[
+                        SizedBox(width: 6.w),
+                        Text(
+                          '· $score/100',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w600,
+                            color: ready
+                                ? AppColors.success
+                                : AppColors.error,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
             ),
+            SizedBox(width: 8.w),
+            if (hasScore && ready)
+              _ReadinessBadge(score: score),
             SizedBox(width: 8.w),
             StatusBadgeWidget(status: user.status),
             SizedBox(width: 8.w),
@@ -98,6 +158,32 @@ class UserListTileWidget extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReadinessBadge extends StatelessWidget {
+  final int score;
+
+  const _ReadinessBadge({required this.score});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+      decoration: BoxDecoration(
+        color: AppColors.success.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        AppStrings.ready,
+        style: TextStyle(
+          fontSize: 10.sp,
+          fontWeight: FontWeight.w700,
+          color: AppColors.success,
         ),
       ),
     );

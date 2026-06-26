@@ -56,10 +56,10 @@ class _DetailView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
-        title: const Text(AppStrings.rejectConfirm),
+        title: Text(AppStrings.rejectConfirm),
         content: TextField(
           controller: ctrl,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: AppStrings.rejectionReason,
             hintText: AppStrings.rejectionReasonHint,
           ),
@@ -68,16 +68,16 @@ class _DetailView extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.cancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               cubit.rejectUser(reason: ctrl.text.trim());
             },
-            child: const Text(
+            child: Text(
               AppStrings.reject,
-              style: TextStyle(color: AppColors.error),
+              style: const TextStyle(color: AppColors.error),
             ),
           ),
         ],
@@ -102,7 +102,7 @@ class _DetailView extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -155,9 +155,9 @@ class _DetailView extends StatelessWidget {
                   backgroundColor: AppColors.surface,
                   foregroundColor: AppColors.textPrimary,
                   elevation: 0,
-                  title: const Text(
+                  title: Text(
                     AppStrings.userDetails,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
@@ -207,7 +207,7 @@ class _DetailView extends StatelessWidget {
                   ),
               ],
               body: state.user == null
-                  ? const Center(child: Text('User not found'))
+                  ? Center(child: Text(AppStrings.userNotFound))
                   : TabBarView(
                       children: [
                         _PreList(sessions: state.preSessions, fmt: _fmt),
@@ -312,24 +312,24 @@ class _ProfileBanner extends StatelessWidget {
           // Stats row
           Row(
             children: [
-              _StatBox(label: 'Total', value: '${state.totalSessions}'),
+              _StatBox(label: AppStrings.total, value: '${state.totalSessions}'),
               SizedBox(width: 8.w),
               _StatBox(
-                label: 'Avg Readiness',
+                label: AppStrings.avgReadiness,
                 value: state.avgReadiness > 0
                     ? '${state.avgReadiness.toStringAsFixed(1)}/10'
                     : '—',
               ),
               SizedBox(width: 8.w),
               _StatBox(
-                label: 'Avg RPE',
+                label: AppStrings.avgRpe,
                 value: state.avgRpe > 0
                     ? '${state.avgRpe.toStringAsFixed(1)}/10'
                     : '—',
               ),
               SizedBox(width: 8.w),
               _StatBox(
-                label: 'Last Active',
+                label: AppStrings.lastActive,
                 value: state.lastActivity != null
                     ? formatDate(state.lastActivity!)
                     : '—',
@@ -503,45 +503,45 @@ class _PreCard extends StatelessWidget {
       rows: [
         _RowData(
           icon: Icons.bedtime_rounded,
-          label: 'Sleep',
+          label: AppStrings.sleep,
           value:
               '${s.hoursOfSleep.toStringAsFixed(s.hoursOfSleep == s.hoursOfSleep.roundToDouble() ? 0 : 1)} hrs',
-          extra: 'Quality ${s.sleepQuality}/5',
+          extra: AppStrings.sleepQualityDisplay(s.sleepQuality),
           valueColor: _scale(s.sleepQuality, 5, higher: true),
         ),
         _RowData(
           icon: Icons.battery_alert_rounded,
-          label: 'Fatigue',
+          label: AppStrings.fatigue,
           value: '${s.fatigueLevel}/10',
           valueColor: _scale(s.fatigueLevel, 10, higher: false),
         ),
         _RowData(
           icon: Icons.fitness_center_rounded,
-          label: 'Muscle Soreness',
+          label: AppStrings.muscleSorenessShort,
           value: '${s.muscleSoreness}/10',
           valueColor: _scale(s.muscleSoreness, 10, higher: false),
         ),
         _RowData(
           icon: Icons.sentiment_satisfied_alt_rounded,
-          label: 'Mood',
+          label: AppStrings.mood,
           value: '${s.mood}/5',
           valueColor: _scale(s.mood, 5, higher: true),
         ),
         _RowData(
           icon: Icons.psychology_rounded,
-          label: 'Stress',
+          label: AppStrings.stress,
           value: '${s.stressLevel}/10',
           valueColor: _scale(s.stressLevel, 10, higher: false),
         ),
         _RowData(
           icon: Icons.bolt_rounded,
-          label: 'Energy',
+          label: AppStrings.energy,
           value: '${s.energyLevel}/10',
           valueColor: _scale(s.energyLevel, 10, higher: true),
         ),
         _RowData(
           icon: Icons.directions_run_rounded,
-          label: 'Readiness',
+          label: AppStrings.readiness,
           value: '${s.readinessToTrain}/10',
           valueColor: _scale(s.readinessToTrain, 10, higher: true),
           bold: true,
@@ -549,8 +549,8 @@ class _PreCard extends StatelessWidget {
         if (s.hasPainOrInjury)
           _RowData(
             icon: Icons.healing_rounded,
-            label: 'Pain / Injury',
-            value: s.painLocation ?? 'Yes',
+            label: AppStrings.painInjury,
+            value: s.painLocation ?? AppStrings.yes,
             valueColor: AppColors.error,
           ),
       ],
@@ -592,14 +592,14 @@ class _PostCard extends StatelessWidget {
       rows: [
         _RowData(
           icon: Icons.speed_rounded,
-          label: 'RPE',
+          label: AppStrings.rpe,
           value: '${s.rpe}/10',
           valueColor: _scale(s.rpe, 10, higher: false),
           bold: true,
         ),
         _RowData(
           icon: Icons.battery_alert_rounded,
-          label: 'Fatigue',
+          label: AppStrings.fatigue,
           value: '${s.fatigue}/10',
           valueColor: _scale(s.fatigue, 10, higher: false),
         ),
@@ -607,28 +607,28 @@ class _PostCard extends StatelessWidget {
           icon: s.completedWorkout
               ? Icons.check_circle_rounded
               : Icons.cancel_rounded,
-          label: 'Completed Workout',
-          value: s.completedWorkout ? 'Yes' : 'No',
+          label: AppStrings.completedWorkoutShort,
+          value: s.completedWorkout ? AppStrings.yes : AppStrings.no,
           valueColor: s.completedWorkout ? AppColors.success : AppColors.error,
         ),
         if (s.feltPain)
           _RowData(
             icon: Icons.healing_rounded,
-            label: 'Pain',
-            value: s.painLocation ?? 'Yes',
+            label: AppStrings.pain,
+            value: s.painLocation ?? AppStrings.yes,
             valueColor: AppColors.error,
           ),
         if (s.injury)
           _RowData(
             icon: Icons.personal_injury_rounded,
-            label: 'Injury',
-            value: 'Reported',
+            label: AppStrings.injury,
+            value: AppStrings.reported,
             valueColor: AppColors.error,
           ),
         if (s.notes != null && s.notes!.isNotEmpty)
           _RowData(
             icon: Icons.notes_rounded,
-            label: 'Notes',
+            label: AppStrings.notes,
             value: s.notes!,
             valueColor: AppColors.textSecondary,
           ),

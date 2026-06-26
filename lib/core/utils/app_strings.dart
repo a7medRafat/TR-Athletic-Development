@@ -1,135 +1,202 @@
+import 'package:easy_localization/easy_localization.dart';
+
 class AppStrings {
   AppStrings._();
 
   // App
-  static const String appName = 'TR Athletic Development';
+  static String get appName => 'app_name'.tr();
 
   // Auth
-  static const String email = 'Email';
-  static const String password = 'Password';
-  static const String login = 'Login';
-  static const String logout = 'Logout';
-  static const String emailHint = 'Enter your email';
-  static const String passwordHint = 'Enter your password';
-  static const String emailRequired = 'Email is required';
-  static const String passwordRequired = 'Password is required';
-  static const String invalidEmail = 'Please enter a valid email';
+  static String get email => 'email'.tr();
+  static String get password => 'password'.tr();
+  static String get login => 'login'.tr();
+  static String get logout => 'logout'.tr();
+  static String get emailHint => 'email_hint'.tr();
+  static String get passwordHint => 'password_hint'.tr();
+  static String get emailRequired => 'email_required'.tr();
+  static String get passwordRequired => 'password_required'.tr();
+  static String get invalidEmail => 'invalid_email'.tr();
 
   // Navigation
-  static const String preTraining = 'Pre Training';
-  static const String postTraining = 'Post Training';
+  static String get preTraining => 'pre_training'.tr();
+  static String get postTraining => 'post_training'.tr();
 
   // Pre Training
-  static const String preTrainingTitle = 'Pre-Training Check-In';
-  static const String sleepQuality = 'Sleep Quality';
-  static const String hoursOfSleep = 'Hours of Sleep';
-  static const String fatigueLevel = 'Fatigue Level';
-  static const String muscleSoreness = 'Muscle Soreness (DOMS)';
-  static const String mood = 'Mood';
-  static const String stressLevel = 'Stress Level';
-  static const String energyLevel = 'Energy Level';
-  static const String painOrInjury = 'Do you have pain or injury?';
-  static const String painLocation = 'Pain Location';
-  static const String painLocationHint = 'Describe the pain location';
-  static const String readinessToTrain = 'Are you ready to train today?';
+  static String get preTrainingTitle => 'pre_training_title'.tr();
+  static String get sleepQuality => 'sleep_quality'.tr();
+  static String get hoursOfSleep => 'hours_of_sleep'.tr();
+  static String get fatigueLevel => 'fatigue_level'.tr();
+  static String get muscleSoreness => 'muscle_soreness'.tr();
+  static String get mood => 'mood'.tr();
+  static String get stressLevel => 'stress_level'.tr();
+  static String get energyLevel => 'energy_level'.tr();
+  static String get painOrInjury => 'pain_or_injury'.tr();
+  static String get painLocation => 'pain_location'.tr();
+  static String get painLocationHint => 'pain_location_hint'.tr();
+  static String get readinessToTrain => 'readiness_to_train'.tr();
 
   // Post Training
-  static const String postTrainingTitle = 'Post-Training Check-In';
-  static const String rpe = 'RPE (Rate of Perceived Exertion)';
-  static const String completedWorkout = 'Did you complete the workout?';
-  static const String feltPain = 'Did you feel pain?';
-  static const String injuryOccurred = 'Did injury happen?';
-  static const String currentFatigue = 'Current Fatigue';
-  static const String notes = 'Notes';
-  static const String notesHint = 'Any additional notes (optional)';
+  static String get postTrainingTitle => 'post_training_title'.tr();
+  static String get rpe => 'rpe'.tr();
+  static String get completedWorkout => 'completed_workout'.tr();
+  static String get feltPain => 'felt_pain'.tr();
+  static String get injuryOccurred => 'injury_occurred'.tr();
+  static String get currentFatigue => 'current_fatigue'.tr();
+  static String get notes => 'notes'.tr();
+  static String get notesHint => 'notes_hint'.tr();
 
   // Common
-  static const String yes = 'Yes';
-  static const String no = 'No';
-  static const String submit = 'Submit';
-  static const String veryBad = 'Very Bad';
-  static const String excellent = 'Excellent';
-  static const String low = 'Low';
-  static const String high = 'High';
-  static const String submitSuccess = 'Submitted successfully!';
-  static const String submitError = 'Failed to submit. Please try again.';
+  static String get yes => 'yes'.tr();
+  static String get no => 'no'.tr();
+  static String get submit => 'submit'.tr();
+  static String get cancel => 'cancel'.tr();
+  static String get veryBad => 'very_bad'.tr();
+  static String get excellent => 'excellent'.tr();
+  static String get low => 'low'.tr();
+  static String get high => 'high'.tr();
+  static String get submitSuccess => 'submit_success'.tr();
+  static String get submitError => 'submit_error'.tr();
 
   // Register
-  static const String register = 'Register';
-  static const String createAccount = 'Create an account';
-  static const String fullName = 'Full Name';
-  static const String fullNameHint = 'Enter your full name';
-  static const String fullNameRequired = 'Full name is required';
-  static const String phoneNumber = 'Phone Number';
-  static const String phoneHint = 'Enter your phone number';
-  static const String phoneRequired = 'Phone number is required';
-  static const String passwordTooShort = 'Password must be at least 6 characters';
-  static const String tapToSelectImage = 'Tap to add a profile photo';
-  static const String alreadyHaveAccount = 'Already have an account? ';
-  static const String dontHaveAccount = "Don't have an account? ";
-  static const String signIn = 'Sign In';
+  static String get register => 'register'.tr();
+  static String get createAccount => 'create_account'.tr();
+  static String get fullName => 'full_name'.tr();
+  static String get fullNameHint => 'full_name_hint'.tr();
+  static String get fullNameRequired => 'full_name_required'.tr();
+  static String get phoneNumber => 'phone_number'.tr();
+  static String get phoneHint => 'phone_hint'.tr();
+  static String get phoneRequired => 'phone_required'.tr();
+  static String get passwordTooShort => 'password_too_short'.tr();
+  static String get tapToSelectImage => 'tap_to_select_image'.tr();
+  static String get alreadyHaveAccount => 'already_have_account'.tr();
+  static String get dontHaveAccount => 'dont_have_account'.tr();
+  static String get signIn => 'sign_in'.tr();
 
   // Settings
-  static const String settings = 'Settings';
-  static const String editProfile = 'Edit Profile';
-  static const String updateProfile = 'Update Profile';
-  static const String saveChanges = 'Save Changes';
-  static const String profileUpdated = 'Profile updated successfully!';
+  static String get settings => 'settings'.tr();
+  static String get editProfile => 'edit_profile'.tr();
+  static String get updateProfile => 'update_profile'.tr();
+  static String get saveChanges => 'save_changes'.tr();
+  static String get profileUpdated => 'profile_updated'.tr();
+  static String get language => 'language'.tr();
+  static String get changeLanguage => 'change_language'.tr();
+  static String get english => 'english'.tr();
+  static String get arabic => 'arabic'.tr();
 
   // Image picker
-  static const String selectPhotoSource = 'Select Photo';
-  static const String fromGallery = 'Photo Library';
-  static const String fromCamera = 'Camera';
+  static String get selectPhotoSource => 'select_photo_source'.tr();
+  static String get fromGallery => 'from_gallery'.tr();
+  static String get fromCamera => 'from_camera'.tr();
 
   // Account status screens
-  static const String pendingTitle = 'Waiting for Approval';
-  static const String pendingSubtitle =
-      'Your account is under review. An administrator will approve your access shortly.';
-  static const String pendingNote =
-      'You will be automatically redirected once your account is approved.';
-  static const String rejectedTitle = 'Account Not Approved';
-  static const String rejectedSubtitle =
-      'Your account registration was not approved at this time.';
-  static const String disabledTitle = 'Account Disabled';
-  static const String disabledSubtitle =
-      'Your account has been temporarily disabled. Please contact your administrator.';
+  static String get pendingTitle => 'pending_title'.tr();
+  static String get pendingSubtitle => 'pending_subtitle'.tr();
+  static String get pendingNote => 'pending_note'.tr();
+  static String get rejectedTitle => 'rejected_title'.tr();
+  static String get rejectedSubtitle => 'rejected_subtitle'.tr();
+  static String get disabledTitle => 'disabled_title'.tr();
+  static String get disabledSubtitle => 'disabled_subtitle'.tr();
 
   // Admin
-  static const String adminDashboard = 'Admin Dashboard';
-  static const String requests = 'Requests';
-  static const String allUsers = 'All Users';
-  static const String approve = 'Approve';
-  static const String reject = 'Reject';
-  static const String enable = 'Enable';
-  static const String disable = 'Disable';
-  static const String search = 'Search users...';
-  static const String noRequests = 'No pending requests';
-  static const String noUsers = 'No users found';
-  static const String userDetails = 'User Details';
-  static const String submissionHistory = 'Submission History';
-  static const String analytics = 'Analytics';
-  static const String totalSubmissions = 'Total Submissions';
-  static const String preTrainingSessions = 'Pre-Training';
-  static const String postTrainingSessions = 'Post-Training';
-  static const String avgReadiness = 'Avg Readiness';
-  static const String avgRpe = 'Avg RPE';
-  static const String lastActivity = 'Last Activity';
-  static const String noHistory = 'No submissions yet';
-  static const String approveConfirm = 'Approve this user?';
-  static const String rejectConfirm = 'Reject this user?';
-  static const String disableConfirm = 'Disable this user?';
-  static const String enableConfirm = 'Enable this user?';
-  static const String confirmAction = 'Confirm';
-  static const String rejectionReason = 'Rejection reason (optional)';
-  static const String rejectionReasonHint = 'Enter reason...';
-  static const String userApproved = 'User approved successfully';
-  static const String userRejected = 'User rejected';
-  static const String userEnabled = 'User account enabled';
-  static const String userDisabled = 'User account disabled';
+  static String get adminDashboard => 'admin_dashboard'.tr();
+  static String get requests => 'requests'.tr();
+  static String get allUsers => 'all_users'.tr();
+  static String get approve => 'approve'.tr();
+  static String get reject => 'reject'.tr();
+  static String get enable => 'enable'.tr();
+  static String get disable => 'disable'.tr();
+  static String get search => 'search'.tr();
+  static String get noRequests => 'no_requests'.tr();
+  static String get noUsers => 'no_users'.tr();
+  static String get userDetails => 'user_details'.tr();
+  static String get submissionHistory => 'submission_history'.tr();
+  static String get analytics => 'analytics'.tr();
+  static String get totalSubmissions => 'total_submissions'.tr();
+  static String get preTrainingSessions => 'pre_training_sessions'.tr();
+  static String get postTrainingSessions => 'post_training_sessions'.tr();
+  static String get avgReadiness => 'avg_readiness'.tr();
+  static String get avgRpe => 'avg_rpe'.tr();
+  static String get lastActivity => 'last_activity'.tr();
+  static String get noHistory => 'no_history'.tr();
+  static String get approveConfirm => 'approve_confirm'.tr();
+  static String get rejectConfirm => 'reject_confirm'.tr();
+  static String get disableConfirm => 'disable_confirm'.tr();
+  static String get enableConfirm => 'enable_confirm'.tr();
+  static String get confirmAction => 'confirm_action'.tr();
+  static String get rejectionReason => 'rejection_reason'.tr();
+  static String get rejectionReasonHint => 'rejection_reason_hint'.tr();
+  static String get userApproved => 'user_approved'.tr();
+  static String get userRejected => 'user_rejected'.tr();
+  static String get userEnabled => 'user_enabled'.tr();
+  static String get userDisabled => 'user_disabled'.tr();
 
   // Status labels
-  static const String statusPending = 'Pending';
-  static const String statusApproved = 'Approved';
-  static const String statusRejected = 'Rejected';
-  static const String statusDisabled = 'Disabled';
+  static String get statusPending => 'status_pending'.tr();
+  static String get statusApproved => 'status_approved'.tr();
+  static String get statusRejected => 'status_rejected'.tr();
+  static String get statusDisabled => 'status_disabled'.tr();
+
+  // Dialogs / common
+  static String get signOutConfirm => 'sign_out_confirm'.tr();
+
+  // Home screen
+  static String get welcomeBack => 'welcome_back'.tr();
+  static String get todaysCheckIn => 'todays_check_in'.tr();
+  static String get trackTraining => 'track_training'.tr();
+  static String get preTrainingSubtitle => 'pre_training_subtitle'.tr();
+  static String get postTrainingSubtitle => 'post_training_subtitle'.tr();
+
+  // Admin screen
+  static String get adminPanel => 'admin_panel'.tr();
+  static String get administrator => 'administrator'.tr();
+  static String get usersTab => 'users_tab'.tr();
+  static String get statsTab => 'stats_tab'.tr();
+  static String approveUser(String name) =>
+      'approve_user'.tr(namedArgs: {'name': name});
+  static String get filterAll => 'filter_all'.tr();
+  static String get userOverview => 'user_overview'.tr();
+  static String get total => 'total'.tr();
+  static String get active => 'active'.tr();
+  static String get rejectedDisabled => 'rejected_disabled'.tr();
+  static String get readinessOverview => 'readiness_overview'.tr();
+  static String get scoreDistribution => 'score_distribution'.tr();
+  static String get ready => 'ready'.tr();
+  static String get notReady => 'not_ready'.tr();
+  static String get noData => 'no_data'.tr();
+  static String get avgScore => 'avg_score'.tr();
+  static String get userNotFound => 'user_not_found'.tr();
+  static String get lastActive => 'last_active'.tr();
+
+  // Session field labels
+  static String get sleep => 'sleep'.tr();
+  static String get fatigue => 'fatigue'.tr();
+  static String get muscleSorenessShort => 'muscle_soreness_short'.tr();
+  static String get painInjury => 'pain_injury'.tr();
+  static String get readiness => 'readiness'.tr();
+  static String get energy => 'energy'.tr();
+  static String get stress => 'stress'.tr();
+  static String get completedWorkoutShort => 'completed_workout_short'.tr();
+  static String get pain => 'pain'.tr();
+  static String get injury => 'injury'.tr();
+  static String get reported => 'reported'.tr();
+
+  // Slider labels
+  static String get veryEasy => 'very_easy'.tr();
+  static String get maxEffort => 'max_effort'.tr();
+  static String get zeroHrs => 'zero_hrs'.tr();
+  static String get twelveHrs => 'twelve_hrs'.tr();
+
+  // Profile / settings
+  static String get personalInformation => 'personal_information'.tr();
+  static String get updatePersonalInfo => 'update_personal_info'.tr();
+  static String get noChanges => 'no_changes'.tr();
+  static String get signInToContinue => 'sign_in_to_continue'.tr();
+
+  // Stats with params
+  static String thresholdLabel(int value) =>
+      'threshold_label'.tr(namedArgs: {'value': '$value'});
+  static String percentReady(int percent) =>
+      'percent_ready'.tr(namedArgs: {'percent': '$percent'});
+  static String sleepQualityDisplay(int quality) =>
+      'sleep_quality_display'.tr(namedArgs: {'quality': '$quality'});
 }

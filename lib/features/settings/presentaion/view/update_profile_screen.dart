@@ -85,7 +85,7 @@ class _UpdateProfileViewState extends State<_UpdateProfileView> {
             if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text(AppStrings.profileUpdated),
+                content: Text(AppStrings.profileUpdated),
                 backgroundColor: AppColors.success,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
@@ -191,7 +191,7 @@ class _ProfileFormCard extends StatelessWidget {
               ),
               SizedBox(width: 10.w),
               Text(
-                'Personal Information',
+                AppStrings.personalInformation,
                 style: TextStyle(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,

@@ -34,10 +34,10 @@ class _PostTrainingView extends StatelessWidget {
         if (state.isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Row(
+              content: Row(
                 children: [
-                  Icon(Icons.check_circle_outline_rounded, color: Colors.white),
-                  SizedBox(width: 10),
+                  const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                  const SizedBox(width: 10),
                   Text(AppStrings.submitSuccess),
                 ],
               ),
@@ -75,7 +75,7 @@ class _PostTrainingView extends StatelessWidget {
         final cubit = context.read<PostTrainingCubit>();
         return Scaffold(
           appBar: AppBar(
-            title: const Text(AppStrings.postTrainingTitle),
+            title: Text(AppStrings.postTrainingTitle),
           ),
           body: state.isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -90,8 +90,8 @@ class _PostTrainingView extends StatelessWidget {
                         min: 1,
                         max: 10,
                         divisions: 9,
-                        minLabel: 'Very Easy',
-                        maxLabel: 'Max Effort',
+                        minLabel: AppStrings.veryEasy,
+                        maxLabel: AppStrings.maxEffort,
                         onChanged: (v) => cubit.updateRpe(v.round()),
                       ),
                       RadioQuestionWidget(

@@ -27,7 +27,7 @@ class RegisterSubmitButtonWidget extends StatelessWidget {
                     strokeWidth: 2,
                   ),
                 )
-              : const Text(AppStrings.register),
+              : Text(AppStrings.register),
         );
       },
     );

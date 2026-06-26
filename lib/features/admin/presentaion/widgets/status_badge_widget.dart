@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_strings.dart';
 
 class StatusBadgeWidget extends StatelessWidget {
   final String status;
@@ -9,11 +10,12 @@ class StatusBadgeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (status == 'approved') return const SizedBox.shrink();
+
     final (color, label) = switch (status) {
-      'pending' => (AppColors.warning, 'Pending'),
-      'approved' => (AppColors.success, 'Approved'),
-      'rejected' => (AppColors.error, 'Rejected'),
-      'disabled' => (AppColors.textSecondary, 'Disabled'),
+      'pending' => (AppColors.warning, AppStrings.statusPending),
+      'rejected' => (AppColors.error, AppStrings.statusRejected),
+      'disabled' => (AppColors.textSecondary, AppStrings.statusDisabled),
       _ => (AppColors.textSecondary, status),
     };
     return Container(

@@ -27,7 +27,7 @@ class LoginSubmitButtonWidget extends StatelessWidget {
                     strokeWidth: 2,
                   ),
                 )
-              : const Text(AppStrings.login),
+              : Text(AppStrings.login),
         );
       },
     );

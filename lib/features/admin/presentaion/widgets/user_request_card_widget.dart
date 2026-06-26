@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_strings.dart';
 import '../../data/models/admin_user_model.dart';
 import 'status_badge_widget.dart';
 
@@ -102,7 +103,7 @@ class UserRequestCardWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: _ActionButton(
-                    label: 'Approve',
+                    label: AppStrings.approve,
                     icon: Icons.check_rounded,
                     color: AppColors.success,
                     onTap: onApprove,
@@ -111,7 +112,7 @@ class UserRequestCardWidget extends StatelessWidget {
                 SizedBox(width: 8.w),
                 Expanded(
                   child: _ActionButton(
-                    label: 'Reject',
+                    label: AppStrings.reject,
                     icon: Icons.close_rounded,
                     color: AppColors.error,
                     onTap: onReject,

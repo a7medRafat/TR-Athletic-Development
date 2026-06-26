@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_strings.dart';
 import '../../data/models/user_profile_model.dart';
 
 class UpdateProfileHeaderWidget extends StatelessWidget {
@@ -99,7 +100,7 @@ class UpdateProfileHeaderWidget extends StatelessWidget {
                     ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Update your personal information',
+                    AppStrings.updatePersonalInfo,
                     style: TextStyle(
                       fontSize: 13.sp,
                       color: Colors.white.withValues(alpha: 0.72),

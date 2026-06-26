@@ -35,7 +35,7 @@ class LoginHeaderWidget extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         Text(
-          'Sign in to continue',
+          AppStrings.signInToContinue,
           style: TextStyle(
             fontSize: 14.sp,
             color: AppColors.textSecondary,

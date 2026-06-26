@@ -33,10 +33,10 @@ class _PreTrainingView extends StatelessWidget {
         if (state.isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Row(
+              content: Row(
                 children: [
-                  Icon(Icons.check_circle_outline_rounded, color: Colors.white),
-                  SizedBox(width: 10),
+                  const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                  const SizedBox(width: 10),
                   Text(AppStrings.submitSuccess),
                 ],
               ),
@@ -74,7 +74,7 @@ class _PreTrainingView extends StatelessWidget {
         final cubit = context.read<PreTrainingCubit>();
         return Scaffold(
           appBar: AppBar(
-            title: const Text(AppStrings.preTrainingTitle),
+            title: Text(AppStrings.preTrainingTitle),
           ),
           body: state.isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -99,8 +99,8 @@ class _PreTrainingView extends StatelessWidget {
                         min: 0,
                         max: 12,
                         divisions: 24,
-                        minLabel: '0 hrs',
-                        maxLabel: '12 hrs',
+                        minLabel: AppStrings.zeroHrs,
+                        maxLabel: AppStrings.twelveHrs,
                         valueFormatter: (v) =>
                             '${v.toStringAsFixed(v == v.roundToDouble() ? 0 : 1)} hrs',
                         onChanged: (v) => cubit.updateHoursOfSleep(v),

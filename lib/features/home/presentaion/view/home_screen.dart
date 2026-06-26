@@ -58,12 +58,12 @@ class _HomeView extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const Text(AppStrings.logout),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text(AppStrings.logout),
+        content: Text(AppStrings.signOutConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -130,7 +130,7 @@ class _HomeView extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Welcome back',
+                  AppStrings.welcomeBack,
                   style: TextStyle(
                     fontSize: 11.sp,
                     color: AppColors.textSecondary,
@@ -156,7 +156,7 @@ class _HomeView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Today's Check-In",
+                  AppStrings.todaysCheckIn,
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
@@ -165,7 +165,7 @@ class _HomeView extends StatelessWidget {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'Track your training readiness and recovery',
+                  AppStrings.trackTraining,
                   style: TextStyle(
                     fontSize: 13.sp,
                     color: AppColors.textSecondary,
@@ -175,7 +175,7 @@ class _HomeView extends StatelessWidget {
                 _TrainingCard(
                   icon: Icons.self_improvement_rounded,
                   title: AppStrings.preTraining,
-                  subtitle: 'Sleep, fatigue & readiness check',
+                  subtitle: AppStrings.preTrainingSubtitle,
                   color: AppColors.primary,
                   lightColor: AppColors.primaryLight,
                   onTap: () => Navigator.push(
@@ -189,7 +189,7 @@ class _HomeView extends StatelessWidget {
                 _TrainingCard(
                   icon: Icons.fitness_center_rounded,
                   title: AppStrings.postTraining,
-                  subtitle: 'RPE, pain & recovery check',
+                  subtitle: AppStrings.postTrainingSubtitle,
                   color: AppColors.accent,
                   lightColor: AppColors.accent.withValues(alpha: 0.12),
                   onTap: () => Navigator.push(
