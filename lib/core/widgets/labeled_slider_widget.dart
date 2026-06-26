@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/app_colors.dart';
 
+enum SliderColorMode { higherIsBetter, lowerIsBetter, neutral }
+
 class LabeledSliderWidget extends StatelessWidget {
   final String title;
   final double value;
@@ -13,6 +15,7 @@ class LabeledSliderWidget extends StatelessWidget {
   final String? maxLabel;
   final ValueChanged<double> onChanged;
   final String Function(double)? valueFormatter;
+  final SliderColorMode colorMode;
 
   const LabeledSliderWidget({
     super.key,
@@ -25,6 +28,7 @@ class LabeledSliderWidget extends StatelessWidget {
     this.maxLabel,
     required this.onChanged,
     this.valueFormatter,
+    this.colorMode = SliderColorMode.neutral,
   });
 
   String _formatValue(double v) {
@@ -33,8 +37,24 @@ class LabeledSliderWidget extends StatelessWidget {
     return v.toStringAsFixed(1);
   }
 
+  Color _computeColor() {
+    if (colorMode == SliderColorMode.neutral) return AppColors.primary;
+    final ratio = (value - min) / (max - min);
+    if (colorMode == SliderColorMode.higherIsBetter) {
+      if (ratio >= 0.65) return AppColors.success;
+      if (ratio >= 0.35) return AppColors.warning;
+      return AppColors.error;
+    } else {
+      if (ratio <= 0.35) return AppColors.success;
+      if (ratio <= 0.65) return AppColors.warning;
+      return AppColors.error;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final color = _computeColor();
+
     return Container(
       margin: EdgeInsets.only(bottom: 20.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
@@ -68,7 +88,7 @@ class LabeledSliderWidget extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Text(
@@ -76,7 +96,7 @@ class LabeledSliderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
+                    color: color,
                   ),
                 ),
               ),
@@ -85,6 +105,10 @@ class LabeledSliderWidget extends StatelessWidget {
           SizedBox(height: 4.h),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
+              activeTrackColor: color,
+              thumbColor: color,
+              overlayColor: color.withValues(alpha: 0.15),
+              inactiveTrackColor: color.withValues(alpha: 0.18),
               showValueIndicator: ShowValueIndicator.never,
             ),
             child: Slider(
@@ -104,18 +128,12 @@ class LabeledSliderWidget extends StatelessWidget {
                   if (minLabel != null)
                     Text(
                       minLabel!,
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 11.sp, color: AppColors.textSecondary),
                     ),
                   if (maxLabel != null)
                     Text(
                       maxLabel!,
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 11.sp, color: AppColors.textSecondary),
                     ),
                 ],
               ),

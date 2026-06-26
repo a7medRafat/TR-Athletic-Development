@@ -17,6 +17,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     double? weight,
     double? height,
     String? gender,
+    String? previousInjuries,
   }) async {
     emit(state.copyWith(isLoading: true, clearError: true));
     final result = await _repo.register(
@@ -28,6 +29,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       weight: weight,
       height: height,
       gender: gender,
+      previousInjuries: previousInjuries,
     );
     result.when(
       success: (_) => emit(state.copyWith(isLoading: false, isSuccess: true)),

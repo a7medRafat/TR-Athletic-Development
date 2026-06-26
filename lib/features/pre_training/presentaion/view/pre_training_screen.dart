@@ -6,7 +6,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/widgets/app_submit_button.dart';
-import '../../../../core/widgets/labeled_slider_widget.dart';
+import '../../../../core/widgets/labeled_slider_widget.dart'
+    show LabeledSliderWidget, SliderColorMode;
 import '../../../../core/widgets/pain_input_widget.dart';
 import '../../../../core/widgets/radio_question_widget.dart';
 import '../logic/pre_training_cubit.dart';
@@ -93,6 +94,7 @@ class _PreTrainingView extends StatelessWidget {
                         divisions: 9,
                         minLabel: AppStrings.veryBad,
                         maxLabel: AppStrings.excellent,
+                        colorMode: SliderColorMode.higherIsBetter,
                         onChanged: (v) => cubit.updateSleepQuality(v.round()),
                       ),
                       LabeledSliderWidget(
@@ -103,6 +105,7 @@ class _PreTrainingView extends StatelessWidget {
                         divisions: 24,
                         minLabel: AppStrings.zeroHrs,
                         maxLabel: AppStrings.twelveHrs,
+                        colorMode: SliderColorMode.higherIsBetter,
                         valueFormatter: (v) =>
                             '${v.toStringAsFixed(v == v.roundToDouble() ? 0 : 1)} hrs',
                         onChanged: (v) => cubit.updateHoursOfSleep(v),
@@ -115,6 +118,7 @@ class _PreTrainingView extends StatelessWidget {
                         divisions: 9,
                         minLabel: AppStrings.low,
                         maxLabel: AppStrings.high,
+                        colorMode: SliderColorMode.lowerIsBetter,
                         onChanged: (v) => cubit.updateFatigueLevel(v.round()),
                       ),
                       LabeledSliderWidget(
@@ -125,6 +129,7 @@ class _PreTrainingView extends StatelessWidget {
                         divisions: 9,
                         minLabel: AppStrings.low,
                         maxLabel: AppStrings.high,
+                        colorMode: SliderColorMode.lowerIsBetter,
                         onChanged: (v) => cubit.updateMuscleSoreness(v.round()),
                       ),
                       LabeledSliderWidget(
@@ -135,6 +140,7 @@ class _PreTrainingView extends StatelessWidget {
                         divisions: 4,
                         minLabel: AppStrings.veryBad,
                         maxLabel: AppStrings.excellent,
+                        colorMode: SliderColorMode.higherIsBetter,
                         onChanged: (v) => cubit.updateMood(v.round()),
                       ),
                       LabeledSliderWidget(
@@ -145,6 +151,7 @@ class _PreTrainingView extends StatelessWidget {
                         divisions: 9,
                         minLabel: AppStrings.low,
                         maxLabel: AppStrings.high,
+                        colorMode: SliderColorMode.lowerIsBetter,
                         onChanged: (v) => cubit.updateStressLevel(v.round()),
                       ),
                       LabeledSliderWidget(
@@ -155,6 +162,7 @@ class _PreTrainingView extends StatelessWidget {
                         divisions: 9,
                         minLabel: AppStrings.low,
                         maxLabel: AppStrings.high,
+                        colorMode: SliderColorMode.higherIsBetter,
                         onChanged: (v) => cubit.updateEnergyLevel(v.round()),
                       ),
                       RadioQuestionWidget(

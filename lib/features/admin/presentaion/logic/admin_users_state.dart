@@ -1,9 +1,12 @@
 import 'package:equatable/equatable.dart';
+
+import '../../../../core/utils/readiness_calculator.dart';
 import '../../data/models/admin_user_model.dart';
 
 class AdminUsersState extends Equatable {
   final List<AdminUserModel> allUsers;
   final String statusFilter;
+  final String readinessFilter; // 'all' | 'ready' | 'not_ready'
   final String searchQuery;
   final bool isLoading;
   final String? errorMessage;
@@ -12,6 +15,7 @@ class AdminUsersState extends Equatable {
   const AdminUsersState({
     this.allUsers = const [],
     this.statusFilter = 'all',
+    this.readinessFilter = 'all',
     this.searchQuery = '',
     this.isLoading = false,
     this.errorMessage,
@@ -22,6 +26,14 @@ class AdminUsersState extends Equatable {
     var list = allUsers;
     if (statusFilter != 'all') {
       list = list.where((u) => u.status == statusFilter).toList();
+    }
+    if (readinessFilter != 'all') {
+      list = list.where((u) {
+        final score = u.lastReadinessScore;
+        if (score == null) return false;
+        final ready = ReadinessCalculator.isReady(score);
+        return readinessFilter == 'ready' ? ready : !ready;
+      }).toList();
     }
     if (searchQuery.trim().isNotEmpty) {
       final q = searchQuery.trim().toLowerCase();
@@ -41,6 +53,7 @@ class AdminUsersState extends Equatable {
   AdminUsersState copyWith({
     List<AdminUserModel>? allUsers,
     String? statusFilter,
+    String? readinessFilter,
     String? searchQuery,
     bool? isLoading,
     String? errorMessage,
@@ -50,6 +63,7 @@ class AdminUsersState extends Equatable {
       AdminUsersState(
         allUsers: allUsers ?? this.allUsers,
         statusFilter: statusFilter ?? this.statusFilter,
+        readinessFilter: readinessFilter ?? this.readinessFilter,
         searchQuery: searchQuery ?? this.searchQuery,
         isLoading: isLoading ?? this.isLoading,
         errorMessage: clearMessages ? null : errorMessage ?? this.errorMessage,
@@ -61,6 +75,7 @@ class AdminUsersState extends Equatable {
   List<Object?> get props => [
         allUsers,
         statusFilter,
+        readinessFilter,
         searchQuery,
         isLoading,
         errorMessage,

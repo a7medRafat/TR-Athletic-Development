@@ -6,7 +6,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/widgets/app_submit_button.dart';
-import '../../../../core/widgets/labeled_slider_widget.dart';
+import '../../../../core/widgets/labeled_slider_widget.dart'
+    show LabeledSliderWidget, SliderColorMode;
 import '../../../../core/widgets/pain_input_widget.dart';
 import '../../../../core/widgets/radio_question_widget.dart';
 import '../logic/post_training_cubit.dart';
@@ -94,7 +95,21 @@ class _PostTrainingView extends StatelessWidget {
                         divisions: 9,
                         minLabel: AppStrings.veryEasy,
                         maxLabel: AppStrings.maxEffort,
+                        colorMode: SliderColorMode.lowerIsBetter,
                         onChanged: (v) => cubit.updateRpe(v.round()),
+                      ),
+                      LabeledSliderWidget(
+                        title: AppStrings.trainingDuration,
+                        value: state.trainingDuration,
+                        min: 5,
+                        max: 150,
+                        divisions: 29,
+                        minLabel: '5 min',
+                        maxLabel: '150 min',
+                        colorMode: SliderColorMode.neutral,
+                        valueFormatter: (v) => '${v.round()} min',
+                        onChanged: (v) =>
+                            cubit.updateTrainingDuration(v.roundToDouble()),
                       ),
                       RadioQuestionWidget(
                         question: AppStrings.completedWorkout,
@@ -124,6 +139,7 @@ class _PostTrainingView extends StatelessWidget {
                         divisions: 4,
                         minLabel: AppStrings.low,
                         maxLabel: AppStrings.high,
+                        colorMode: SliderColorMode.lowerIsBetter,
                         onChanged: (v) => cubit.updateFatigue(v.round()),
                       ),
                       NotesFieldWidget(

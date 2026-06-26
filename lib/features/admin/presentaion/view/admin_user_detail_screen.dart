@@ -586,6 +586,14 @@ class _OverviewTab extends StatelessWidget {
           _StatsGrid(
             items: [
               _StatItem(
+                label: AppStrings.trainingLoad,
+                value: state.totalTrainingLoad > 0
+                    ? state.totalTrainingLoad.toStringAsFixed(1)
+                    : '—',
+                icon: Icons.bolt_rounded,
+                color: AppColors.accent,
+              ),
+              _StatItem(
                 label: AppStrings.totalSubmissions,
                 value: '${state.totalSessions}',
                 icon: Icons.bar_chart_rounded,
@@ -632,13 +640,12 @@ class _OverviewTab extends StatelessWidget {
                 color: AppColors.success,
               ),
               _StatItem(
-                label: AppStrings.lastActive,
-                value: state.lastActivity != null
-                    ? fmt(state.lastActivity!)
-                    : '—',
-                icon: Icons.calendar_month_rounded,
-                color: AppColors.textSecondary,
-                small: true,
+                label: AppStrings.totalInjuries,
+                value: '${state.totalInjuries}',
+                icon: Icons.personal_injury_rounded,
+                color: state.totalInjuries > 0
+                    ? AppColors.error
+                    : AppColors.success,
               ),
             ],
           ),
@@ -707,14 +714,11 @@ class _StatItem {
   final String value;
   final IconData icon;
   final Color color;
-  final bool small;
-
   const _StatItem({
     required this.label,
     required this.value,
     required this.icon,
     required this.color,
-    this.small = false,
   });
 }
 
@@ -766,7 +770,7 @@ class _StatsGrid extends StatelessWidget {
               Text(
                 item.value,
                 style: TextStyle(
-                  fontSize: item.small ? 11.sp : 14.sp,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w800,
                   color: item.color == AppColors.textSecondary
                       ? AppColors.textPrimary
@@ -1006,6 +1010,14 @@ class _PostCard extends StatelessWidget {
           valueColor: _scale(s.rpe, 10, higher: false),
           bold: true,
         ),
+        if (s.trainingDuration != null)
+          _RowData(
+            icon: Icons.timer_rounded,
+            label: AppStrings.trainingDuration,
+            value: '${s.trainingDuration!.round()} min',
+            extra: 'Load: ${(s.rpe * s.trainingDuration!).toStringAsFixed(0)}',
+            valueColor: AppColors.primary,
+          ),
         _RowData(
           icon: Icons.battery_alert_rounded,
           label: AppStrings.fatigue,

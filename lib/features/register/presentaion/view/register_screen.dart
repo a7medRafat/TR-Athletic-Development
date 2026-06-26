@@ -43,6 +43,7 @@ class _RegisterViewState extends State<_RegisterView> {
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
+  final _previousInjuriesController = TextEditingController();
 
   String? _selectedGender;
   bool _genderTouched = false;
@@ -56,6 +57,7 @@ class _RegisterViewState extends State<_RegisterView> {
     _ageController.dispose();
     _weightController.dispose();
     _heightController.dispose();
+    _previousInjuriesController.dispose();
     super.dispose();
   }
 
@@ -73,6 +75,9 @@ class _RegisterViewState extends State<_RegisterView> {
       weight: double.tryParse(_weightController.text.trim()),
       height: double.tryParse(_heightController.text.trim()),
       gender: _selectedGender,
+      previousInjuries: _previousInjuriesController.text.trim().isEmpty
+          ? null
+          : _previousInjuriesController.text.trim(),
     );
   }
 
@@ -147,6 +152,18 @@ class _RegisterViewState extends State<_RegisterView> {
                       selected: _selectedGender,
                       touched: _genderTouched,
                       onSelect: (g) => setState(() => _selectedGender = g),
+                    ),
+                    SizedBox(height: 16.h),
+
+                    // Previous injuries (optional)
+                    AppNewTextFormField(
+                      controller: _previousInjuriesController,
+                      inputType: InputType.text,
+                      textInputAction: TextInputAction.next,
+                      labelName: AppStrings.previousInjuries,
+                      hintText: AppStrings.previousInjuriesHint,
+                      maxLines: 2,
+                      validator: (_) => null,
                     ),
                     SizedBox(height: 16.h),
 

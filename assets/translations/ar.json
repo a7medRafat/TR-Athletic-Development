@@ -34,6 +34,9 @@
   "current_fatigue": "مستوى الإجهاد الحالي",
   "notes": "ملاحظات",
   "notes_hint": "أي ملاحظات إضافية (اختياري)",
+  "training_duration": "مدة التدريب (دقيقة)",
+  "training_duration_hint": "مثال: 60",
+  "training_load": "حمل التدريب",
 
   "yes": "نعم",
   "no": "لا",
@@ -144,6 +147,11 @@
   "avg_score": "متوسط الدرجة",
   "user_not_found": "المستخدم غير موجود",
   "last_active": "آخر نشاط",
+  "total_injuries": "إجمالي الإصابات",
+  "ready_to_train": "جاهز",
+  "not_ready_to_train": "غير جاهز",
+  "previous_injuries": "إصابات سابقة",
+  "previous_injuries_hint": "مثال: رباط الركبة، آلام الظهر",
 
   "sleep": "النوم",
   "fatigue": "الإجهاد",

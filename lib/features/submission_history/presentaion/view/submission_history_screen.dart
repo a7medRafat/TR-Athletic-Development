@@ -280,6 +280,14 @@ class _PostCard extends StatelessWidget {
           valueColor: _scale(s.rpe, 10, higher: false),
           bold: true,
         ),
+        if (s.trainingDuration != null)
+          _RowData(
+            icon: Icons.timer_rounded,
+            label: AppStrings.trainingDuration,
+            value: '${s.trainingDuration!.round()} min',
+            extra: 'Load: ${(s.rpe * s.trainingDuration!).toStringAsFixed(0)}',
+            valueColor: AppColors.primary,
+          ),
         _RowData(
           icon: Icons.battery_alert_rounded,
           label: AppStrings.fatigue,

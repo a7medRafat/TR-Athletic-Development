@@ -34,6 +34,18 @@ class AdminUserDetailState extends Equatable {
         postSessions.length;
   }
 
+  // Training Load = sum of (rpe × trainingDuration) for sessions that have duration
+  double get totalTrainingLoad {
+    final withDuration = postSessions.where((s) => s.trainingDuration != null);
+    if (withDuration.isEmpty) return 0;
+    return withDuration
+        .map((s) => s.rpe * s.trainingDuration!)
+        .reduce((a, b) => a + b);
+  }
+
+  int get totalInjuries =>
+      postSessions.where((s) => s.injury).length;
+
   DateTime? get lastActivity {
     final dates = [
       ...preSessions.map((s) => s.createdAt),

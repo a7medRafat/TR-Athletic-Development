@@ -10,6 +10,7 @@ class PostTrainingModel {
   final bool injury;
   final int fatigue;
   final String? notes;
+  final double? trainingDuration;
   final DateTime createdAt;
 
   const PostTrainingModel({
@@ -22,6 +23,7 @@ class PostTrainingModel {
     required this.injury,
     required this.fatigue,
     this.notes,
+    this.trainingDuration,
     required this.createdAt,
   });
 
@@ -34,6 +36,7 @@ class PostTrainingModel {
         'injury': injury,
         'fatigue': fatigue,
         'notes': notes,
+        if (trainingDuration != null) 'trainingDuration': trainingDuration,
         'createdAt': Timestamp.fromDate(createdAt),
       };
 
@@ -48,6 +51,7 @@ class PostTrainingModel {
         injury: map['injury'] as bool,
         fatigue: (map['fatigue'] as num).toInt(),
         notes: map['notes'] as String?,
+        trainingDuration: (map['trainingDuration'] as num?)?.toDouble(),
         createdAt: (map['createdAt'] as Timestamp).toDate(),
       );
 }

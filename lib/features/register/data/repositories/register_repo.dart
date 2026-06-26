@@ -16,6 +16,7 @@ class RegisterRepo {
     double? weight,
     double? height,
     String? gender,
+    String? previousInjuries,
   }) async {
     try {
       final uid = await _service.register(
@@ -27,6 +28,7 @@ class RegisterRepo {
         weight: weight,
         height: height,
         gender: gender,
+        previousInjuries: previousInjuries,
       );
       return ApiResult.success(uid);
     } catch (e) {

@@ -715,6 +715,7 @@ class _UsersTab extends StatelessWidget {
                 onChanged: cubit.setSearch,
               ),
               SizedBox(height: 10.h),
+              // Status filters
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -734,6 +735,43 @@ class _UsersTab extends StatelessWidget {
                           onTap: () => cubit.setFilter(f.$1),
                         ),
                       ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 8.h),
+              // Readiness filters
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: _FilterChip(
+                        label: AppStrings.filterAll,
+                        selected: state.readinessFilter == 'all',
+                        onTap: () => cubit.setReadinessFilter('all'),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: _FilterChip(
+                        label: AppStrings.readyToTrain,
+                        selected: state.readinessFilter == 'ready',
+                        onTap: () => cubit.setReadinessFilter('ready'),
+                        activeColor: AppColors.success,
+                        icon: Icons.check_circle_rounded,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: _FilterChip(
+                        label: AppStrings.notReadyToTrain,
+                        selected: state.readinessFilter == 'not_ready',
+                        onTap: () => cubit.setReadinessFilter('not_ready'),
+                        activeColor: AppColors.error,
+                        icon: Icons.cancel_rounded,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1204,31 +1242,52 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final Color? activeColor;
+  final IconData? icon;
 
-  const _FilterChip(
-      {required this.label, required this.selected, required this.onTap});
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.activeColor,
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final color = activeColor ?? AppColors.primary;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surface,
+          color: selected ? color : AppColors.surface,
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
+            color: selected ? color : AppColors.border,
           ),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : AppColors.textSecondary,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 13.sp,
+                color: selected ? Colors.white : color,
+              ),
+              SizedBox(width: 4.w),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.white : AppColors.textSecondary,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -10,6 +10,7 @@ class RegisterModel {
   final double? weight;
   final double? height;
   final String? gender;
+  final String? previousInjuries;
   final String role;
   final String status;
   final DateTime createdAt;
@@ -24,6 +25,7 @@ class RegisterModel {
     this.weight,
     this.height,
     this.gender,
+    this.previousInjuries,
     this.role = 'user',
     this.status = 'pending',
     required this.createdAt,
@@ -38,6 +40,8 @@ class RegisterModel {
         if (weight != null) 'weight': weight,
         if (height != null) 'height': height,
         if (gender != null) 'gender': gender,
+        if (previousInjuries != null && previousInjuries!.isNotEmpty)
+          'previousInjuries': previousInjuries,
         'role': role,
         'status': status,
         'createdAt': Timestamp.fromDate(createdAt),

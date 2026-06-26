@@ -31,6 +31,9 @@ class PostTrainingCubit extends Cubit<PostTrainingState> {
 
   void updateNotes(String value) => emit(state.copyWith(notes: value));
 
+  void updateTrainingDuration(double value) =>
+      emit(state.copyWith(trainingDuration: value));
+
   Future<void> submit() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
@@ -49,6 +52,7 @@ class PostTrainingCubit extends Cubit<PostTrainingState> {
       injury: state.injury,
       fatigue: state.fatigue,
       notes: state.notes.trim().isEmpty ? null : state.notes.trim(),
+      trainingDuration: state.trainingDuration,
       createdAt: DateTime.now(),
     );
 

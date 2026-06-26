@@ -23,6 +23,8 @@ class AdminUsersCubit extends Cubit<AdminUsersState> {
   }
 
   void setFilter(String filter) => emit(state.copyWith(statusFilter: filter));
+  void setReadinessFilter(String filter) =>
+      emit(state.copyWith(readinessFilter: filter));
   void setSearch(String q) => emit(state.copyWith(searchQuery: q));
 
   Future<void> approveUser(String uid) async {

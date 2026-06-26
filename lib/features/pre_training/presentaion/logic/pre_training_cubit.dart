@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/utils/readiness_calculator.dart';
 import '../../data/models/pre_training_model.dart';
 import '../../data/repositories/pre_training_repo.dart';
 import 'pre_training_state.dart';
@@ -52,6 +53,24 @@ class PreTrainingCubit extends Cubit<PreTrainingState> {
 
     emit(state.copyWith(isLoading: true, clearError: true));
 
+    final now = DateTime.now();
+
+    // Build model with placeholder readiness so calculator can run
+    final draftModel = PreTrainingModel(
+      uid: uid,
+      sleepQuality: state.sleepQuality,
+      hoursOfSleep: state.hoursOfSleep,
+      fatigueLevel: state.fatigueLevel,
+      muscleSoreness: state.muscleSoreness,
+      mood: state.mood,
+      stressLevel: state.stressLevel,
+      energyLevel: state.energyLevel,
+      hasPainOrInjury: state.hasPainOrInjury,
+      painLocation: state.hasPainOrInjury ? state.painLocation : null,
+      readinessToTrain: 5,
+      createdAt: now,
+    );
+
     final model = PreTrainingModel(
       uid: uid,
       sleepQuality: state.sleepQuality,
@@ -63,8 +82,8 @@ class PreTrainingCubit extends Cubit<PreTrainingState> {
       energyLevel: state.energyLevel,
       hasPainOrInjury: state.hasPainOrInjury,
       painLocation: state.hasPainOrInjury ? state.painLocation : null,
-      readinessToTrain: state.readinessToTrain,
-      createdAt: DateTime.now(),
+      readinessToTrain: ReadinessCalculator.calculate(draftModel),
+      createdAt: now,
     );
 
     final result = await _repo.submit(model);

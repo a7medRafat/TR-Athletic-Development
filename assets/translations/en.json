@@ -34,6 +34,9 @@
   "current_fatigue": "Current Fatigue",
   "notes": "Notes",
   "notes_hint": "Any additional notes (optional)",
+  "training_duration": "Training Duration (min)",
+  "training_duration_hint": "e.g. 60",
+  "training_load": "Training Load",
 
   "yes": "Yes",
   "no": "No",
@@ -144,6 +147,11 @@
   "avg_score": "Avg Score",
   "user_not_found": "User not found",
   "last_active": "Last Active",
+  "total_injuries": "Total Injuries",
+  "ready_to_train": "Ready",
+  "not_ready_to_train": "Not Ready",
+  "previous_injuries": "Previous Injuries",
+  "previous_injuries_hint": "e.g. knee ligament, back pain",
 
   "sleep": "Sleep",
   "fatigue": "Fatigue",

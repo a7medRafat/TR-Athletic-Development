@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/readiness_calculator.dart';
 import '../../data/models/admin_user_model.dart';
 import 'status_badge_widget.dart';
@@ -24,7 +23,7 @@ class UserListTileWidget extends StatelessWidget {
     final isDisabled = user.isDisabled;
     final score = user.lastReadinessScore;
     final hasScore = score != null;
-    final ready = hasScore && ReadinessCalculator.isReady(score);
+    final notReady = hasScore && !ReadinessCalculator.isReady(score);
 
     return GestureDetector(
       onTap: onTap,
@@ -34,9 +33,6 @@ class UserListTileWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(14.r),
-          border: (hasScore && !ready)
-              ? Border.all(color: AppColors.error, width: 1.5)
-              : null,
           boxShadow: [
             BoxShadow(
               color: AppColors.cardShadow,
@@ -47,7 +43,7 @@ class UserListTileWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Avatar with readiness ring
+            // Avatar with red dot when not ready
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -66,7 +62,7 @@ class UserListTileWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (hasScore)
+                if (notReady)
                   Positioned(
                     bottom: -2,
                     right: -2,
@@ -74,10 +70,9 @@ class UserListTileWidget extends StatelessWidget {
                       width: 12.r,
                       height: 12.r,
                       decoration: BoxDecoration(
-                        color: ready ? AppColors.success : AppColors.error,
+                        color: AppColors.error,
                         shape: BoxShape.circle,
-                        border: Border.all(
-                            color: AppColors.surface, width: 1.5),
+                        border: Border.all(color: AppColors.surface, width: 1.5),
                       ),
                     ),
                   ),
@@ -105,36 +100,16 @@ class UserListTileWidget extends StatelessWidget {
                       ],
                     ],
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        user.email,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      if (hasScore) ...[
-                        SizedBox(width: 6.w),
-                        Text(
-                          '· $score/100',
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w600,
-                            color: ready
-                                ? AppColors.success
-                                : AppColors.error,
-                          ),
-                        ),
-                      ],
-                    ],
+                  Text(
+                    user.email,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 8.w),
-            if (hasScore && ready)
-              _ReadinessBadge(score: score),
             SizedBox(width: 8.w),
             StatusBadgeWidget(status: user.status),
             SizedBox(width: 8.w),
@@ -158,32 +133,6 @@ class UserListTileWidget extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ReadinessBadge extends StatelessWidget {
-  final int score;
-
-  const _ReadinessBadge({required this.score});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-      decoration: BoxDecoration(
-        color: AppColors.success.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        AppStrings.ready,
-        style: TextStyle(
-          fontSize: 10.sp,
-          fontWeight: FontWeight.w700,
-          color: AppColors.success,
         ),
       ),
     );

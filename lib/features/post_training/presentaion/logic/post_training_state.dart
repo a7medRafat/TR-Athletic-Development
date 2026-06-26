@@ -8,6 +8,7 @@ class PostTrainingState extends Equatable {
   final bool injury;
   final int fatigue;
   final String notes;
+  final double trainingDuration;
   final bool isLoading;
   final bool isSuccess;
   final String? errorMessage;
@@ -20,6 +21,7 @@ class PostTrainingState extends Equatable {
     this.injury = false,
     this.fatigue = 3,
     this.notes = '',
+    this.trainingDuration = 60.0,
     this.isLoading = false,
     this.isSuccess = false,
     this.errorMessage,
@@ -33,6 +35,7 @@ class PostTrainingState extends Equatable {
     bool? injury,
     int? fatigue,
     String? notes,
+    double? trainingDuration,
     bool? isLoading,
     bool? isSuccess,
     String? errorMessage,
@@ -46,6 +49,7 @@ class PostTrainingState extends Equatable {
         injury: injury ?? this.injury,
         fatigue: fatigue ?? this.fatigue,
         notes: notes ?? this.notes,
+        trainingDuration: trainingDuration ?? this.trainingDuration,
         isLoading: isLoading ?? this.isLoading,
         isSuccess: isSuccess ?? this.isSuccess,
         errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
@@ -60,6 +64,7 @@ class PostTrainingState extends Equatable {
         injury,
         fatigue,
         notes,
+        trainingDuration,
         isLoading,
         isSuccess,
         errorMessage,

@@ -44,6 +44,9 @@ class AppStrings {
   static String get currentFatigue => 'current_fatigue'.tr();
   static String get notes => 'notes'.tr();
   static String get notesHint => 'notes_hint'.tr();
+  static String get trainingDuration => 'training_duration'.tr();
+  static String get trainingDurationHint => 'training_duration_hint'.tr();
+  static String get trainingLoad => 'training_load'.tr();
 
   // Common
   static String get yes => 'yes'.tr();
@@ -166,6 +169,11 @@ class AppStrings {
   static String get avgScore => 'avg_score'.tr();
   static String get userNotFound => 'user_not_found'.tr();
   static String get lastActive => 'last_active'.tr();
+  static String get totalInjuries => 'total_injuries'.tr();
+  static String get readyToTrain => 'ready_to_train'.tr();
+  static String get notReadyToTrain => 'not_ready_to_train'.tr();
+  static String get previousInjuries => 'previous_injuries'.tr();
+  static String get previousInjuriesHint => 'previous_injuries_hint'.tr();
 
   // Session field labels
   static String get sleep => 'sleep'.tr();
