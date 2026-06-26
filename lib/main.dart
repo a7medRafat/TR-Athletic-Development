@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -7,6 +8,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/di/injection_container.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/app_strings.dart';
+import 'features/admin/presentaion/view/admin_home_screen.dart';
+import 'features/auth/presentaion/view/disabled_screen.dart';
+import 'features/auth/presentaion/view/pending_approval_screen.dart';
+import 'features/auth/presentaion/view/rejected_screen.dart';
 import 'features/home/presentaion/view/home_screen.dart';
 import 'features/login/presentaion/view/login_screen.dart';
 import 'firebase_options.dart';
@@ -55,14 +60,49 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+      builder: (context, authSnap) {
+        if (authSnap.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        if (snapshot.hasData) return const HomeScreen();
-        return const LoginScreen();
+        final user = authSnap.data;
+        if (user == null) return const LoginScreen();
+
+        return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .snapshots(),
+          builder: (context, docSnap) {
+            if (docSnap.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            final data = docSnap.data?.data();
+            if (data == null) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            final role = (data['role'] as String?) ?? 'user';
+            final status = (data['status'] as String?) ?? 'pending';
+
+            if (role == 'admin') return const AdminHomeScreen();
+
+            return switch (status) {
+              'approved' => const HomeScreen(),
+              'rejected' => RejectedScreen(
+                  reason: data['rejectionReason'] as String?,
+                ),
+              'disabled' => const DisabledScreen(),
+              _ => const PendingApprovalScreen(),
+            };
+          },
+        );
       },
     );
   }

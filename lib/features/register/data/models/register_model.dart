@@ -6,6 +6,8 @@ class RegisterModel {
   final String email;
   final String fullName;
   final String phoneNumber;
+  final String role;
+  final String status;
   final DateTime createdAt;
 
   const RegisterModel({
@@ -14,6 +16,8 @@ class RegisterModel {
     required this.email,
     required this.fullName,
     required this.phoneNumber,
+    this.role = 'user',
+    this.status = 'pending',
     required this.createdAt,
   });
 
@@ -22,6 +26,8 @@ class RegisterModel {
         'email': email,
         'fullName': fullName,
         'phoneNumber': phoneNumber,
+        'role': role,
+        'status': status,
         'createdAt': Timestamp.fromDate(createdAt),
       };
 
@@ -32,6 +38,8 @@ class RegisterModel {
         email: map['email'] as String,
         fullName: map['fullName'] as String,
         phoneNumber: map['phoneNumber'] as String,
+        role: (map['role'] as String?) ?? 'user',
+        status: (map['status'] as String?) ?? 'pending',
         createdAt: (map['createdAt'] as Timestamp).toDate(),
       );
 }

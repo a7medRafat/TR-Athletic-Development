@@ -80,4 +80,56 @@ class AppStrings {
   static const String selectPhotoSource = 'Select Photo';
   static const String fromGallery = 'Photo Library';
   static const String fromCamera = 'Camera';
+
+  // Account status screens
+  static const String pendingTitle = 'Waiting for Approval';
+  static const String pendingSubtitle =
+      'Your account is under review. An administrator will approve your access shortly.';
+  static const String pendingNote =
+      'You will be automatically redirected once your account is approved.';
+  static const String rejectedTitle = 'Account Not Approved';
+  static const String rejectedSubtitle =
+      'Your account registration was not approved at this time.';
+  static const String disabledTitle = 'Account Disabled';
+  static const String disabledSubtitle =
+      'Your account has been temporarily disabled. Please contact your administrator.';
+
+  // Admin
+  static const String adminDashboard = 'Admin Dashboard';
+  static const String requests = 'Requests';
+  static const String allUsers = 'All Users';
+  static const String approve = 'Approve';
+  static const String reject = 'Reject';
+  static const String enable = 'Enable';
+  static const String disable = 'Disable';
+  static const String search = 'Search users...';
+  static const String noRequests = 'No pending requests';
+  static const String noUsers = 'No users found';
+  static const String userDetails = 'User Details';
+  static const String submissionHistory = 'Submission History';
+  static const String analytics = 'Analytics';
+  static const String totalSubmissions = 'Total Submissions';
+  static const String preTrainingSessions = 'Pre-Training';
+  static const String postTrainingSessions = 'Post-Training';
+  static const String avgReadiness = 'Avg Readiness';
+  static const String avgRpe = 'Avg RPE';
+  static const String lastActivity = 'Last Activity';
+  static const String noHistory = 'No submissions yet';
+  static const String approveConfirm = 'Approve this user?';
+  static const String rejectConfirm = 'Reject this user?';
+  static const String disableConfirm = 'Disable this user?';
+  static const String enableConfirm = 'Enable this user?';
+  static const String confirmAction = 'Confirm';
+  static const String rejectionReason = 'Rejection reason (optional)';
+  static const String rejectionReasonHint = 'Enter reason...';
+  static const String userApproved = 'User approved successfully';
+  static const String userRejected = 'User rejected';
+  static const String userEnabled = 'User account enabled';
+  static const String userDisabled = 'User account disabled';
+
+  // Status labels
+  static const String statusPending = 'Pending';
+  static const String statusApproved = 'Approved';
+  static const String statusRejected = 'Rejected';
+  static const String statusDisabled = 'Disabled';
 }

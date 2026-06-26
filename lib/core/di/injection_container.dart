@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../features/admin/data/datasources/admin_firebase_service.dart';
+import '../../features/admin/data/repositories/admin_repo.dart';
+import '../../features/admin/presentaion/logic/admin_users_cubit.dart';
 import '../../features/login/data/datasources/login_firebase_service.dart';
 import '../../features/login/data/repositories/login_repo.dart';
 import '../../features/login/presentaion/logic/login_cubit.dart';
@@ -82,6 +85,17 @@ Future<void> setupGetIt() async {
   );
   getIt.registerFactory<UpdateProfileCubit>(
     () => UpdateProfileCubit(getIt<UpdateProfileRepo>()),
+  );
+
+  // Admin
+  getIt.registerLazySingleton<AdminFirebaseService>(
+    () => AdminFirebaseService(getIt<FirebaseAuth>(), getIt<FirebaseFirestore>()),
+  );
+  getIt.registerLazySingleton<AdminRepo>(
+    () => AdminRepo(getIt<AdminFirebaseService>()),
+  );
+  getIt.registerFactory<AdminUsersCubit>(
+    () => AdminUsersCubit(getIt<AdminRepo>()),
   );
 
   // Register

@@ -1,1 +1,26 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"tr-athletic-development","appId":"1:1005354509282:android:20d86e57431d768b124fbb","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"tr-athletic-development","configurations":{"android":"1:1005354509282:android:20d86e57431d768b124fbb","ios":"1:1005354509282:ios:cd59b4fe99bd9d85124fbb","web":"1:1005354509282:web:427b0201063113e9124fbb"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "tr-athletic-development",
+          "appId": "1:1005354509282:android:20d86e57431d768b124fbb",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "tr-athletic-development",
+          "configurations": {
+            "android": "1:1005354509282:android:20d86e57431d768b124fbb",
+            "ios": "1:1005354509282:ios:cd59b4fe99bd9d85124fbb",
+            "web": "1:1005354509282:web:427b0201063113e9124fbb"
+          }
+        }
+      }
+    }
+  }
+}
