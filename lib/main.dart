@@ -38,13 +38,12 @@ class App extends StatelessWidget {
       designSize: const Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (_, child) =>
-          MaterialApp(
-            title: AppStrings.appName,
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            home: const AuthGate(),
-          ),
+      builder: (_, child) => MaterialApp(
+        title: AppStrings.appName,
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        home: const AuthGate(),
+      ),
     );
   }
 }

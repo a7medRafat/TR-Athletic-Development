@@ -7,9 +7,9 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../logic/pre_training_cubit.dart';
 import '../logic/pre_training_state.dart';
-import '../widgets/labeled_slider_widget.dart';
-import '../widgets/pain_input_widget.dart';
-import '../widgets/radio_question_widget.dart';
+import '../../../../core/widgets/labeled_slider_widget.dart';
+import '../../../../core/widgets/pain_input_widget.dart';
+import '../../../../core/widgets/radio_question_widget.dart';
 
 class PreTrainingScreen extends StatelessWidget {
   const PreTrainingScreen({super.key});

@@ -53,4 +53,31 @@ class AppStrings {
   static const String high = 'High';
   static const String submitSuccess = 'Submitted successfully!';
   static const String submitError = 'Failed to submit. Please try again.';
+
+  // Register
+  static const String register = 'Register';
+  static const String createAccount = 'Create an account';
+  static const String fullName = 'Full Name';
+  static const String fullNameHint = 'Enter your full name';
+  static const String fullNameRequired = 'Full name is required';
+  static const String phoneNumber = 'Phone Number';
+  static const String phoneHint = 'Enter your phone number';
+  static const String phoneRequired = 'Phone number is required';
+  static const String passwordTooShort = 'Password must be at least 6 characters';
+  static const String tapToSelectImage = 'Tap to add a profile photo';
+  static const String alreadyHaveAccount = 'Already have an account? ';
+  static const String dontHaveAccount = "Don't have an account? ";
+  static const String signIn = 'Sign In';
+
+  // Settings
+  static const String settings = 'Settings';
+  static const String editProfile = 'Edit Profile';
+  static const String updateProfile = 'Update Profile';
+  static const String saveChanges = 'Save Changes';
+  static const String profileUpdated = 'Profile updated successfully!';
+
+  // Image picker
+  static const String selectPhotoSource = 'Select Photo';
+  static const String fromGallery = 'Photo Library';
+  static const String fromCamera = 'Camera';
 }

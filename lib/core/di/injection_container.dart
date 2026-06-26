@@ -11,6 +11,15 @@ import '../../features/post_training/presentaion/logic/post_training_cubit.dart'
 import '../../features/pre_training/data/datasources/pre_training_firebase_service.dart';
 import '../../features/pre_training/data/repositories/pre_training_repo.dart';
 import '../../features/pre_training/presentaion/logic/pre_training_cubit.dart';
+import '../../features/register/data/datasources/register_firebase_service.dart';
+import '../../features/register/data/repositories/register_repo.dart';
+import '../../features/register/presentaion/logic/register_cubit.dart';
+import '../../features/settings/data/datasources/settings_firebase_service.dart';
+import '../../features/settings/data/datasources/update_profile_firebase_service.dart';
+import '../../features/settings/data/repositories/settings_repo.dart';
+import '../../features/settings/data/repositories/update_profile_repo.dart';
+import '../../features/settings/presentaion/logic/settings_cubit.dart';
+import '../../features/settings/presentaion/logic/update_profile_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -50,5 +59,42 @@ Future<void> setupGetIt() async {
   );
   getIt.registerFactory<PostTrainingCubit>(
     () => PostTrainingCubit(getIt<PostTrainingRepo>()),
+  );
+
+  // Settings
+  getIt.registerLazySingleton<SettingsFirebaseService>(
+    () => SettingsFirebaseService(getIt<FirebaseAuth>(), getIt<FirebaseFirestore>()),
+  );
+  getIt.registerLazySingleton<SettingsRepo>(
+    () => SettingsRepo(getIt<SettingsFirebaseService>()),
+  );
+  getIt.registerFactory<SettingsCubit>(
+    () => SettingsCubit(getIt<SettingsRepo>()),
+  );
+  getIt.registerLazySingleton<UpdateProfileFirebaseService>(
+    () => UpdateProfileFirebaseService(
+      getIt<FirebaseAuth>(),
+      getIt<FirebaseFirestore>(),
+    ),
+  );
+  getIt.registerLazySingleton<UpdateProfileRepo>(
+    () => UpdateProfileRepo(getIt<UpdateProfileFirebaseService>()),
+  );
+  getIt.registerFactory<UpdateProfileCubit>(
+    () => UpdateProfileCubit(getIt<UpdateProfileRepo>()),
+  );
+
+  // Register
+  getIt.registerLazySingleton<RegisterFirebaseService>(
+    () => RegisterFirebaseService(
+      getIt<FirebaseAuth>(),
+      getIt<FirebaseFirestore>(),
+    ),
+  );
+  getIt.registerLazySingleton<RegisterRepo>(
+    () => RegisterRepo(getIt<RegisterFirebaseService>()),
+  );
+  getIt.registerFactory<RegisterCubit>(
+    () => RegisterCubit(getIt<RegisterRepo>()),
   );
 }
