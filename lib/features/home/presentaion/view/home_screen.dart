@@ -11,6 +11,8 @@ import '../../../settings/data/models/user_profile_model.dart';
 import '../../../settings/presentaion/logic/settings_cubit.dart';
 import '../../../settings/presentaion/logic/settings_state.dart';
 import '../../../settings/presentaion/view/update_profile_screen.dart';
+import '../../../submission_history/presentaion/logic/submission_history_cubit.dart';
+import '../../../submission_history/presentaion/view/submission_history_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -30,7 +32,9 @@ class _HomeView extends StatelessWidget {
   String _initials(String? name, String? fallbackEmail) {
     if (name != null && name.trim().isNotEmpty) {
       final parts = name.trim().split(RegExp(r'\s+'));
-      if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      if (parts.length >= 2) {
+        return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      }
       return parts[0][0].toUpperCase();
     }
     if (fallbackEmail != null && fallbackEmail.isNotEmpty) {
@@ -57,7 +61,9 @@ class _HomeView extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
         title: Text(AppStrings.logout),
         content: Text(AppStrings.signOutConfirm),
         actions: [
@@ -96,7 +102,9 @@ class _HomeView extends StatelessWidget {
             email: email,
             initials: initials,
             profile: state.profile,
-            onEditProfile: () => _openEditProfile(context, cubit, state.profile),
+            uid: state.profile?.uid,
+            onEditProfile: () =>
+                _openEditProfile(context, cubit, state.profile),
             onLogoutRequested: () => _showLogoutConfirm(context, cubit),
           ),
           appBar: AppBar(
@@ -295,6 +303,7 @@ class _AppDrawer extends StatelessWidget {
   final String? email;
   final String initials;
   final UserProfileModel? profile;
+  final String? uid;
   final VoidCallback onEditProfile;
   final VoidCallback onLogoutRequested;
 
@@ -305,6 +314,7 @@ class _AppDrawer extends StatelessWidget {
     required this.profile,
     required this.onEditProfile,
     required this.onLogoutRequested,
+    this.uid,
   });
 
   @override
@@ -362,22 +372,71 @@ class _AppDrawer extends StatelessWidget {
                   color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(10.r),
                 ),
-                child: Icon(Icons.edit_outlined, color: AppColors.primary, size: 20.sp),
+                child: Icon(
+                  Icons.edit_outlined,
+                  color: AppColors.primary,
+                  size: 20.sp,
+                ),
               ),
               title: Text(
                 AppStrings.editProfile,
                 style: TextStyle(
-                  fontSize: 15.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
-              trailing: Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20.sp),
+              trailing: Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary,
+                size: 20.sp,
+              ),
               onTap: () {
                 Navigator.of(context).pop();
                 onEditProfile();
               },
             ),
+            Divider(indent: 16.w, endIndent: 16.w, color: AppColors.border),
+            if (uid != null)
+              ListTile(
+                leading: Container(
+                  width: 38.r,
+                  height: 38.r,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(
+                    Icons.history_rounded,
+                    color: AppColors.primary,
+                    size: 20.sp,
+                  ),
+                ),
+                title: Text(
+                  AppStrings.submissionHistory,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                trailing: Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.textSecondary,
+                  size: 20.sp,
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => BlocProvider(
+                        create: (_) => getIt<SubmissionHistoryCubit>(),
+                        child: SubmissionHistoryScreen(uid: uid!),
+                      ),
+                    ),
+                  );
+                },
+              ),
             Divider(indent: 16.w, endIndent: 16.w, color: AppColors.border),
             ListTile(
               leading: Container(
@@ -387,12 +446,16 @@ class _AppDrawer extends StatelessWidget {
                   color: AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10.r),
                 ),
-                child: Icon(Icons.logout_rounded, color: AppColors.error, size: 20.sp),
+                child: Icon(
+                  Icons.logout_rounded,
+                  color: AppColors.error,
+                  size: 20.sp,
+                ),
               ),
               title: Text(
                 AppStrings.logout,
                 style: TextStyle(
-                  fontSize: 15.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.error,
                 ),
@@ -408,10 +471,7 @@ class _AppDrawer extends StatelessWidget {
               child: Text(
                 AppStrings.appName,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  color: AppColors.textHint,
-                ),
+                style: TextStyle(fontSize: 11.sp, color: AppColors.textHint),
               ),
             ),
           ],

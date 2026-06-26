@@ -97,5 +97,10 @@ class AdminUserModelExt {
         approvedBy: u.approvedBy,
         rejectionReason: u.rejectionReason,
         disabledAt: u.disabledAt,
+        lastReadinessScore: u.lastReadinessScore,
+        age: u.age,
+        weight: u.weight,
+        height: u.height,
+        gender: u.gender,
       );
 }

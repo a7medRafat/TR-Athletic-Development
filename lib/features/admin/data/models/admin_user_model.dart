@@ -13,6 +13,10 @@ class AdminUserModel {
   final String? rejectionReason;
   final DateTime? disabledAt;
   final int? lastReadinessScore;
+  final int? age;
+  final double? weight;
+  final double? height;
+  final String? gender;
 
   const AdminUserModel({
     required this.uid,
@@ -27,6 +31,10 @@ class AdminUserModel {
     this.rejectionReason,
     this.disabledAt,
     this.lastReadinessScore,
+    this.age,
+    this.weight,
+    this.height,
+    this.gender,
   });
 
   bool get isAdmin => role == 'admin';
@@ -60,6 +68,10 @@ class AdminUserModel {
       rejectionReason: map['rejectionReason'] as String?,
       disabledAt: _ts(map['disabledAt']),
       lastReadinessScore: (map['lastReadinessScore'] as num?)?.toInt(),
+      age: (map['age'] as num?)?.toInt(),
+      weight: (map['weight'] as num?)?.toDouble(),
+      height: (map['height'] as num?)?.toDouble(),
+      gender: map['gender'] as String?,
     );
   }
 }

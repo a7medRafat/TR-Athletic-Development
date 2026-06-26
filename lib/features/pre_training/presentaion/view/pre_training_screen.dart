@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
+import '../../../../core/widgets/app_submit_button.dart';
 import '../../../../core/widgets/labeled_slider_widget.dart';
 import '../../../../core/widgets/pain_input_widget.dart';
 import '../../../../core/widgets/radio_question_widget.dart';
@@ -168,7 +169,10 @@ class _PreTrainingView extends StatelessWidget {
                         ),
 
                       SizedBox(height: 16.h),
-                      _SubmitButton(onPressed: cubit.submit),
+                      AppSubmitButton(
+                        label: AppStrings.submit,
+                        onPressed: cubit.submit,
+                      ),
                     ],
                   ),
                 ),
@@ -178,56 +182,3 @@ class _PreTrainingView extends StatelessWidget {
   }
 }
 
-class _SubmitButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _SubmitButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 54.h,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryDark],
-        ),
-        borderRadius: BorderRadius.circular(14.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.32),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(14.r),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(14.r),
-          splashColor: Colors.white.withValues(alpha: 0.2),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.send_rounded, color: Colors.white, size: 18.sp),
-                SizedBox(width: 8.w),
-                Text(
-                  AppStrings.submit,
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

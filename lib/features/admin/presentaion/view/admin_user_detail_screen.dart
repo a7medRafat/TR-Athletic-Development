@@ -45,7 +45,11 @@ class _DetailView extends StatelessWidget {
       'Nov',
       'Dec',
     ];
-    return '${m[dt.month - 1]} ${dt.day}, ${dt.year}';
+    final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final hour = h.toString().padLeft(2, '0');
+    final min = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour < 12 ? 'AM' : 'PM';
+    return '${m[dt.month - 1]} ${dt.day}, ${dt.year}  ·  $hour:$min $period';
   }
 
   void _showRejectDialog(BuildContext context, AdminUserDetailCubit cubit) {
@@ -144,12 +148,11 @@ class _DetailView extends StatelessWidget {
         }
 
         return DefaultTabController(
-          length: 2,
+          length: 3,
           child: Scaffold(
             backgroundColor: AppColors.background,
             body: NestedScrollView(
               headerSliverBuilder: (context, _) => [
-                // ── Sticky AppBar with TabBar ─────────────────────────────
                 SliverAppBar(
                   pinned: true,
                   backgroundColor: AppColors.surface,
@@ -173,15 +176,21 @@ class _DetailView extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                     tabs: [
-                      Tab(text: '${AppStrings.preTrainingSessions} (${state.preSessions.length})'),
-                      Tab(text: '${AppStrings.postTrainingSessions} (${state.postSessions.length})'),
+                      const Tab(text: 'Overview'),
+                      Tab(
+                        text:
+                            '${AppStrings.preTrainingSessions} (${state.preSessions.length})',
+                      ),
+                      Tab(
+                        text:
+                            '${AppStrings.postTrainingSessions} (${state.postSessions.length})',
+                      ),
                     ],
                   ),
                 ),
-                // ── Profile section (scrolls away) ───────────────────────
                 if (state.user != null)
                   SliverToBoxAdapter(
-                    child: _ProfileBanner(
+                    child: _PlayerProfileHeader(
                       user: state.user!,
                       state: state,
                       formatDate: _fmt,
@@ -198,9 +207,13 @@ class _DetailView extends StatelessWidget {
                         final u = state.user!;
                         _showConfirm(
                           context,
-                          u.isDisabled ? AppStrings.enableConfirm : AppStrings.disableConfirm,
+                          u.isDisabled
+                              ? AppStrings.enableConfirm
+                              : AppStrings.disableConfirm,
                           u.fullName.isNotEmpty ? u.fullName : u.email,
-                          () => cubit.setUserStatus(u.isDisabled ? 'approved' : 'disabled'),
+                          () => cubit.setUserStatus(
+                            u.isDisabled ? 'approved' : 'disabled',
+                          ),
                         );
                       },
                     ),
@@ -210,6 +223,7 @@ class _DetailView extends StatelessWidget {
                   ? Center(child: Text(AppStrings.userNotFound))
                   : TabBarView(
                       children: [
+                        _OverviewTab(state: state, fmt: _fmt),
                         _PreList(sessions: state.preSessions, fmt: _fmt),
                         _PostList(sessions: state.postSessions, fmt: _fmt),
                       ],
@@ -230,9 +244,9 @@ class _DetailView extends StatelessWidget {
   );
 }
 
-// ── Profile Banner ────────────────────────────────────────────────────────────
+// ── Player Profile Header ─────────────────────────────────────────────────────
 
-class _ProfileBanner extends StatelessWidget {
+class _PlayerProfileHeader extends StatelessWidget {
   final AdminUserModel user;
   final AdminUserDetailState state;
   final String Function(DateTime) formatDate;
@@ -240,7 +254,7 @@ class _ProfileBanner extends StatelessWidget {
   final VoidCallback onReject;
   final VoidCallback onToggle;
 
-  const _ProfileBanner({
+  const _PlayerProfileHeader({
     required this.user,
     required this.state,
     required this.formatDate,
@@ -249,189 +263,262 @@ class _ProfileBanner extends StatelessWidget {
     required this.onToggle,
   });
 
+  Color get _readinessColor {
+    final score = user.lastReadinessScore ?? 0;
+    if (score >= 7) return AppColors.success;
+    if (score >= 4) return AppColors.warning;
+    return AppColors.error;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.surface,
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Avatar + info + status
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                backgroundColor: AppColors.primaryLight,
-                radius: 28.r,
-                child: Text(
-                  user.initials,
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
+          // ── Top row: avatar + name + readiness badge ──────────────────
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Avatar
+                Container(
+                  width: 72.r,
+                  height: 72.r,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primaryLight,
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      user.initials,
+                      style: TextStyle(
+                        fontSize: 26.sp,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: 14.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.fullName.isNotEmpty ? user.fullName : user.email,
-                      style: TextStyle(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      user.email,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    if (user.phoneNumber.isNotEmpty)
+                SizedBox(width: 16.w),
+                // Name + email
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 4.h),
                       Text(
-                        user.phoneNumber,
+                        user.fullName.isNotEmpty ? user.fullName : user.email,
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        user.email,
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: AppColors.textSecondary,
                         ),
                       ),
-                  ],
+                      if (user.phoneNumber.isNotEmpty) ...[
+                        SizedBox(height: 2.h),
+                        Text(
+                          user.phoneNumber,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                      SizedBox(height: 6.h),
+                      StatusBadgeWidget(status: user.status),
+                    ],
+                  ),
                 ),
-              ),
-              StatusBadgeWidget(status: user.status),
-            ],
+                SizedBox(width: 12.w),
+                // Readiness badge
+                if (user.lastReadinessScore != null)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 10.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _readinessColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14.r),
+                      border: Border.all(
+                        color: _readinessColor.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          '${user.lastReadinessScore}/10',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w900,
+                            color: _readinessColor,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          AppStrings.readiness,
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w600,
+                            color: _readinessColor,
+                          ),
+                        ),
+                        Text(
+                          'Available',
+                          style: TextStyle(
+                            fontSize: 9.sp,
+                            color: _readinessColor.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
-          SizedBox(height: 14.h),
-          // Stats row
-          Row(
-            children: [
-              _StatBox(label: AppStrings.total, value: '${state.totalSessions}'),
-              SizedBox(width: 8.w),
-              _StatBox(
-                label: AppStrings.avgReadiness,
-                value: state.avgReadiness > 0
-                    ? '${state.avgReadiness.toStringAsFixed(1)}/10'
-                    : '—',
-              ),
-              SizedBox(width: 8.w),
-              _StatBox(
-                label: AppStrings.avgRpe,
-                value: state.avgRpe > 0
-                    ? '${state.avgRpe.toStringAsFixed(1)}/10'
-                    : '—',
-              ),
-              SizedBox(width: 8.w),
-              _StatBox(
-                label: AppStrings.lastActive,
-                value: state.lastActivity != null
-                    ? formatDate(state.lastActivity!)
-                    : '—',
-                small: true,
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          // Action buttons
-          if (user.isPending)
-            Row(
+
+          SizedBox(height: 20.h),
+
+          // ── Physical stats row ────────────────────────────────────────
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.w),
+            padding: EdgeInsets.symmetric(vertical: 14.h),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            child: Row(
               children: [
-                Expanded(
-                  child: _BannerButton(
-                    label: AppStrings.approve,
-                    icon: Icons.check_rounded,
-                    color: AppColors.success,
-                    onTap: onApprove,
-                  ),
+                _PhysicalStat(
+                  label: AppStrings.age,
+                  value: user.age != null ? '${user.age}' : '—',
                 ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: _BannerButton(
-                    label: AppStrings.reject,
-                    icon: Icons.close_rounded,
-                    color: AppColors.error,
-                    onTap: onReject,
-                  ),
+                _divider(),
+                _PhysicalStat(
+                  label: AppStrings.heightCm,
+                  value: user.height != null
+                      ? '${user.height!.toStringAsFixed(0)} cm'
+                      : '—',
+                ),
+                _divider(),
+                _PhysicalStat(
+                  label: AppStrings.weightKg,
+                  value: user.weight != null
+                      ? '${user.weight!.toStringAsFixed(0)} kg'
+                      : '—',
+                ),
+                _divider(),
+                _PhysicalStat(
+                  label: AppStrings.gender,
+                  value: user.gender != null
+                      ? '${user.gender![0].toUpperCase()}${user.gender!.substring(1)}'
+                      : '—',
                 ),
               ],
-            )
-          else
-            _BannerButton(
-              label: user.isDisabled ? AppStrings.enable : AppStrings.disable,
-              icon: user.isDisabled
-                  ? Icons.lock_open_rounded
-                  : Icons.lock_outline_rounded,
-              color: user.isDisabled ? AppColors.success : AppColors.error,
-              onTap: onToggle,
             ),
-          SizedBox(height: 8.h),
+          ),
+
+          SizedBox(height: 16.h),
+
+          // ── Action buttons ────────────────────────────────────────────
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
+            child: user.isPending
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: _ActionButton(
+                          label: AppStrings.approve,
+                          icon: Icons.check_rounded,
+                          color: AppColors.success,
+                          onTap: onApprove,
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: _ActionButton(
+                          label: AppStrings.reject,
+                          icon: Icons.close_rounded,
+                          color: AppColors.error,
+                          onTap: onReject,
+                        ),
+                      ),
+                    ],
+                  )
+                : _ActionButton(
+                    label: user.isDisabled
+                        ? AppStrings.enable
+                        : AppStrings.disable,
+                    icon: user.isDisabled
+                        ? Icons.lock_open_rounded
+                        : Icons.lock_outline_rounded,
+                    color: user.isDisabled
+                        ? AppColors.success
+                        : AppColors.error,
+                    onTap: onToggle,
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _divider() =>
+      Container(width: 1, height: 36.h, color: AppColors.border);
+}
+
+class _PhysicalStat extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _PhysicalStat({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 10.sp, color: AppColors.textSecondary),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _StatBox extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool small;
-
-  const _StatBox({
-    required this.label,
-    required this.value,
-    this.small = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
-        decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(10.r),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: small ? 10.sp : 12.sp,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 9.sp, color: AppColors.textSecondary),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BannerButton extends StatelessWidget {
+class _ActionButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
 
-  const _BannerButton({
+  const _ActionButton({
     required this.label,
     required this.icon,
     required this.color,
@@ -445,9 +532,9 @@ class _BannerButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10.h),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.18),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: color.withValues(alpha: 0.5)),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -465,6 +552,245 @@ class _BannerButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Overview Tab ──────────────────────────────────────────────────────────────
+
+class _OverviewTab extends StatelessWidget {
+  final AdminUserDetailState state;
+  final String Function(DateTime) fmt;
+
+  const _OverviewTab({required this.state, required this.fmt});
+
+  @override
+  Widget build(BuildContext context) {
+    final avgFatigue = state.postSessions.isEmpty
+        ? 0.0
+        : state.postSessions.map((s) => s.fatigue).reduce((a, b) => a + b) /
+              state.postSessions.length;
+
+    final completedCount = state.postSessions
+        .where((s) => s.completedWorkout)
+        .length;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Stats grid ────────────────────────────────────────────────
+          _SectionTitle(title: AppStrings.analytics),
+          SizedBox(height: 10.h),
+          _StatsGrid(
+            items: [
+              _StatItem(
+                label: AppStrings.totalSubmissions,
+                value: '${state.totalSessions}',
+                icon: Icons.bar_chart_rounded,
+                color: AppColors.primary,
+              ),
+              _StatItem(
+                label: AppStrings.preTrainingSessions,
+                value: '${state.preSessions.length}',
+                icon: Icons.self_improvement_rounded,
+                color: AppColors.primary,
+              ),
+              _StatItem(
+                label: AppStrings.postTrainingSessions,
+                value: '${state.postSessions.length}',
+                icon: Icons.fitness_center_rounded,
+                color: AppColors.accent,
+              ),
+              _StatItem(
+                label: AppStrings.avgRpe,
+                value: state.avgRpe > 0 ? state.avgRpe.toStringAsFixed(1) : '—',
+                icon: Icons.speed_rounded,
+                color: _rpeColor(state.avgRpe),
+              ),
+              _StatItem(
+                label: AppStrings.avgReadiness,
+                value: state.avgReadiness > 0
+                    ? state.avgReadiness.toStringAsFixed(1)
+                    : '—',
+                icon: Icons.directions_run_rounded,
+                color: _readinessColor(state.avgReadiness),
+              ),
+              _StatItem(
+                label: 'Avg. Fatigue',
+                value: avgFatigue > 0 ? avgFatigue.toStringAsFixed(1) : '—',
+                icon: Icons.battery_alert_rounded,
+                color: _scale(avgFatigue.round(), 5, higher: false),
+              ),
+              _StatItem(
+                label: 'Completed',
+                value: state.postSessions.isEmpty
+                    ? '—'
+                    : '$completedCount/${state.postSessions.length}',
+                icon: Icons.check_circle_rounded,
+                color: AppColors.success,
+              ),
+              _StatItem(
+                label: AppStrings.lastActive,
+                value: state.lastActivity != null
+                    ? fmt(state.lastActivity!)
+                    : '—',
+                icon: Icons.calendar_month_rounded,
+                color: AppColors.textSecondary,
+                small: true,
+              ),
+            ],
+          ),
+
+          SizedBox(height: 24.h),
+
+          // ── Recent pre-training ───────────────────────────────────────
+          if (state.preSessions.isNotEmpty) ...[
+            _SectionTitle(title: 'Latest Pre-Training'),
+            SizedBox(height: 10.h),
+            _PreCard(session: state.preSessions.first, fmt: fmt),
+          ],
+
+          // ── Recent post-training ──────────────────────────────────────
+          if (state.postSessions.isNotEmpty) ...[
+            SizedBox(height: 8.h),
+            _SectionTitle(title: 'Latest Post-Training'),
+            SizedBox(height: 10.h),
+            _PostCard(session: state.postSessions.first, fmt: fmt),
+          ],
+
+          if (state.preSessions.isEmpty && state.postSessions.isEmpty)
+            SizedBox(height: 40.h),
+          if (state.preSessions.isEmpty && state.postSessions.isEmpty)
+            _emptyState(),
+        ],
+      ),
+    );
+  }
+
+  Color _rpeColor(double v) {
+    if (v == 0) return AppColors.textSecondary;
+    if (v >= 7) return AppColors.error;
+    if (v >= 4) return AppColors.warning;
+    return AppColors.success;
+  }
+
+  Color _readinessColor(double v) {
+    if (v == 0) return AppColors.textSecondary;
+    if (v >= 7) return AppColors.success;
+    if (v >= 4) return AppColors.warning;
+    return AppColors.error;
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+
+  const _SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 15.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textPrimary,
+      ),
+    );
+  }
+}
+
+class _StatItem {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+  final bool small;
+
+  const _StatItem({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+    this.small = false,
+  });
+}
+
+class _StatsGrid extends StatelessWidget {
+  final List<_StatItem> items;
+
+  const _StatsGrid({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 10.w,
+        mainAxisSpacing: 10.h,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: items.length,
+      itemBuilder: (_, i) {
+        final item = items[i];
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14.r),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.cardShadow,
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          padding: EdgeInsets.all(10.r),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 32.r,
+                height: 32.r,
+                decoration: BoxDecoration(
+                  color: item.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(item.icon, size: 17.sp, color: item.color),
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                item.value,
+                style: TextStyle(
+                  fontSize: item.small ? 11.sp : 14.sp,
+                  fontWeight: FontWeight.w800,
+                  color: item.color == AppColors.textSecondary
+                      ? AppColors.textPrimary
+                      : item.color,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                item.label,
+                style: TextStyle(
+                  fontSize: 9.sp,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -497,9 +823,14 @@ class _PreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = session;
+    final readinessColor = _scale(s.readinessToTrain, 10, higher: true);
     return _SessionCard(
       date: fmt(s.createdAt),
       accentColor: AppColors.primary,
+      readinessBanner: _ReadinessBanner(
+        score: s.readinessToTrain,
+        color: readinessColor,
+      ),
       rows: [
         _RowData(
           icon: Icons.bedtime_rounded,
@@ -539,13 +870,6 @@ class _PreCard extends StatelessWidget {
           value: '${s.energyLevel}/10',
           valueColor: _scale(s.energyLevel, 10, higher: true),
         ),
-        _RowData(
-          icon: Icons.directions_run_rounded,
-          label: AppStrings.readiness,
-          value: '${s.readinessToTrain}/10',
-          valueColor: _scale(s.readinessToTrain, 10, higher: true),
-          bold: true,
-        ),
         if (s.hasPainOrInjury)
           _RowData(
             icon: Icons.healing_rounded,
@@ -554,6 +878,91 @@ class _PreCard extends StatelessWidget {
             valueColor: AppColors.error,
           ),
       ],
+    );
+  }
+}
+
+// ── Readiness Banner ──────────────────────────────────────────────────────────
+
+class _ReadinessBanner extends StatelessWidget {
+  final int score;
+  final Color color;
+
+  const _ReadinessBanner({required this.score, required this.color});
+
+  String get _label {
+    if (score >= 7) return 'Ready';
+    if (score >= 4) return 'Moderate';
+    return 'Not Ready';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36.r,
+            height: 36.r,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.directions_run_rounded,
+              size: 18.sp,
+              color: color,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.readiness,
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: color.withValues(alpha: 0.8),
+                  ),
+                ),
+                Text(
+                  _label,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$score',
+            style: TextStyle(
+              fontSize: 28.sp,
+              fontWeight: FontWeight.w900,
+              color: color,
+              height: 1,
+            ),
+          ),
+          Text(
+            '/10',
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w500,
+              color: color.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -600,8 +1009,8 @@ class _PostCard extends StatelessWidget {
         _RowData(
           icon: Icons.battery_alert_rounded,
           label: AppStrings.fatigue,
-          value: '${s.fatigue}/10',
-          valueColor: _scale(s.fatigue, 10, higher: false),
+          value: '${s.fatigue}/5',
+          valueColor: _scale(s.fatigue, 5, higher: false),
         ),
         _RowData(
           icon: s.completedWorkout
@@ -643,11 +1052,13 @@ class _SessionCard extends StatelessWidget {
   final String date;
   final Color accentColor;
   final List<_RowData> rows;
+  final Widget? readinessBanner;
 
   const _SessionCard({
     required this.date,
     required this.accentColor,
     required this.rows,
+    this.readinessBanner,
   });
 
   @override
@@ -668,7 +1079,6 @@ class _SessionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Date header strip
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
             decoration: BoxDecoration(
@@ -697,7 +1107,6 @@ class _SessionCard extends StatelessWidget {
               ],
             ),
           ),
-          // Fields
           Padding(
             padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 14.h),
             child: Column(
@@ -767,6 +1176,7 @@ class _SessionCard extends StatelessWidget {
                   .toList(),
             ),
           ),
+          ?readinessBanner,
         ],
       ),
     );
@@ -802,7 +1212,7 @@ Widget _emptyState() {
         const SizedBox(height: 10),
         Text(
           AppStrings.noHistory,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),
       ],
     ),

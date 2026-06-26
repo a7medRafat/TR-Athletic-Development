@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
+import '../../../../core/widgets/app_submit_button.dart';
 import '../../../../core/widgets/labeled_slider_widget.dart';
 import '../../../../core/widgets/pain_input_widget.dart';
 import '../../../../core/widgets/radio_question_widget.dart';
@@ -36,7 +37,10 @@ class _PostTrainingView extends StatelessWidget {
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                  const Icon(
+                    Icons.check_circle_outline_rounded,
+                    color: Colors.white,
+                  ),
                   const SizedBox(width: 10),
                   Text(AppStrings.submitSuccess),
                 ],
@@ -74,9 +78,7 @@ class _PostTrainingView extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<PostTrainingCubit>();
         return Scaffold(
-          appBar: AppBar(
-            title: Text(AppStrings.postTrainingTitle),
-          ),
+          appBar: AppBar(title: Text(AppStrings.postTrainingTitle)),
           body: state.isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
@@ -129,66 +131,19 @@ class _PostTrainingView extends StatelessWidget {
                         onChanged: cubit.updateNotes,
                       ),
                       SizedBox(height: 16.h),
-                      _SubmitButton(onPressed: cubit.submit),
+                      AppSubmitButton(
+                        label: AppStrings.submit,
+                        onPressed: cubit.submit,
+                        gradientColors: const [
+                          AppColors.accent,
+                          Color(0xFFE85A20),
+                        ],
+                      ),
                     ],
                   ),
                 ),
         );
       },
-    );
-  }
-}
-
-class _SubmitButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _SubmitButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 54.h,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.accent, Color(0xFFE85A20)],
-        ),
-        borderRadius: BorderRadius.circular(14.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.accent.withValues(alpha: 0.32),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(14.r),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(14.r),
-          splashColor: Colors.white.withValues(alpha: 0.2),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.send_rounded, color: Colors.white, size: 18.sp),
-                SizedBox(width: 8.w),
-                Text(
-                  AppStrings.submit,
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

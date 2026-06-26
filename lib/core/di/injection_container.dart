@@ -23,6 +23,7 @@ import '../../features/settings/data/repositories/settings_repo.dart';
 import '../../features/settings/data/repositories/update_profile_repo.dart';
 import '../../features/settings/presentaion/logic/settings_cubit.dart';
 import '../../features/settings/presentaion/logic/update_profile_cubit.dart';
+import '../../features/submission_history/presentaion/logic/submission_history_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -85,6 +86,11 @@ Future<void> setupGetIt() async {
   );
   getIt.registerFactory<UpdateProfileCubit>(
     () => UpdateProfileCubit(getIt<UpdateProfileRepo>()),
+  );
+
+  // Submission History
+  getIt.registerFactory<SubmissionHistoryCubit>(
+    () => SubmissionHistoryCubit(getIt<PreTrainingRepo>(), getIt<PostTrainingRepo>()),
   );
 
   // Admin
