@@ -72,8 +72,8 @@ class PreCardWidget extends StatelessWidget {
         SessionRowData(
           icon: Icons.sentiment_satisfied_alt_rounded,
           label: AppStrings.mood,
-          value: '${s.mood}/5',
-          valueColor: _scale(s.mood, 5, higher: true),
+          value: '${s.mood}/10',
+          valueColor: _scale(s.mood, 10, higher: true),
         ),
         SessionRowData(
           icon: Icons.psychology_rounded,

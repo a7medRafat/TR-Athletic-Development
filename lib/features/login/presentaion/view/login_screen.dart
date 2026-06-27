@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -55,6 +56,14 @@ class _LoginViewState extends State<_LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          _LanguageSwitcher(),
+          SizedBox(width: 8.w),
+        ],
+      ),
       body: BlocListener<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginFailure) {
@@ -120,6 +129,48 @@ class _LoginViewState extends State<_LoginView> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageSwitcher extends StatelessWidget {
+  const _LanguageSwitcher();
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = context.locale.languageCode == 'ar';
+    return GestureDetector(
+      onTap: () {
+        final next = isArabic ? const Locale('en') : const Locale('ar');
+        context.setLocale(next);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: AppColors.primaryLight,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              isArabic ? '🇺🇸' : '🇸🇦',
+              style: TextStyle(fontSize: 14.sp),
+            ),
+            SizedBox(width: 6.w),
+            Text(
+              isArabic ? 'EN' : 'AR',
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
         ),
       ),
     );

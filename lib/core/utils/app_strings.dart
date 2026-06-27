@@ -220,6 +220,82 @@ class AppStrings {
   static String get female => 'female'.tr();
   static String get otherGender => 'other_gender'.tr();
 
+  // Multi-step register
+  static String get next => 'next'.tr();
+  static String get back => 'back'.tr();
+  static String get stepGeneral => 'step_general'.tr();
+  static String get stepMedical => 'step_medical'.tr();
+  static String get step1Title => 'step_1_title'.tr();
+  static String get step2Title => 'step_2_title'.tr();
+
+  // Medical step — sections
+  static String get medicalPrevMuscle => 'medical_prev_muscle'.tr();
+  static String get medicalPrevJoint => 'medical_prev_joint'.tr();
+  static String get medicalSurgeryHist => 'medical_surgery_hist'.tr();
+  static String get medicalCurrentStatus => 'medical_current_status'.tr();
+  static String get medicalQMuscle => 'medical_q_muscle'.tr();
+  static String get medicalQJoint => 'medical_q_joint'.tr();
+  static String get medicalQSurgery => 'medical_q_surgery'.tr();
+
+  // Medical step — fields
+  static String get medicalSide => 'medical_side'.tr();
+  static String get medicalGrade => 'medical_grade'.tr();
+  static String get medicalDateInjury => 'medical_date_injury'.tr();
+  static String get medicalDaysLost => 'medical_days_lost'.tr();
+  static String get medicalReinjury => 'medical_reinjury'.tr();
+  static String get medicalSurgeryReq => 'medical_surgery_req'.tr();
+  static String get medicalSurgeryName => 'medical_surgery_name'.tr();
+  static String get medicalBodyArea => 'medical_body_area'.tr();
+  static String get medicalSurgeryDate => 'medical_surgery_date'.tr();
+  static String get medicalSurgeon => 'medical_surgeon'.tr();
+  static String get medicalRtp => 'medical_rtp'.tr();
+  static String get medicalStatusField => 'medical_status_field'.tr();
+  static String get medicalAddSurgery => 'medical_add_surgery'.tr();
+  static String medicalSurgeryN(int n) =>
+      'medical_surgery_n'.tr(namedArgs: {'n': '$n'});
+
+  // Medical step — current status toggles
+  static String get medicalCurrentPain => 'medical_current_pain'.tr();
+  static String get medicalChronicInjury => 'medical_chronic_injury'.tr();
+  static String get medicalMedications => 'medical_medications'.tr();
+  static String get medicalAllergies => 'medical_allergies'.tr();
+  static String get medicalSupportiveEq => 'medical_supportive_eq'.tr();
+
+  // Muscle groups (display, data key stays English)
+  static String get mgHamstring => 'mg_hamstring'.tr();
+  static String get mgQuadriceps => 'mg_quadriceps'.tr();
+  static String get mgAdductor => 'mg_adductor'.tr();
+  static String get mgCalf => 'mg_calf'.tr();
+  static String get mgHipFlexor => 'mg_hip_flexor'.tr();
+  static String get mgGlute => 'mg_glute'.tr();
+  static String get mgLowerBack => 'mg_lower_back'.tr();
+
+  // Joint types (display)
+  static String get jtAcl => 'jt_acl'.tr();
+  static String get jtPcl => 'jt_pcl'.tr();
+  static String get jtMcl => 'jt_mcl'.tr();
+  static String get jtLcl => 'jt_lcl'.tr();
+  static String get jtMeniscus => 'jt_meniscus'.tr();
+  static String get jtAnkleSprain => 'jt_ankle_sprain'.tr();
+  static String get jtShoulder => 'jt_shoulder'.tr();
+  static String get jtOther => 'jt_other'.tr();
+
+  // Sides
+  static String get sideRight => 'side_right'.tr();
+  static String get sideLeft => 'side_left'.tr();
+  static String get sideBoth => 'side_both'.tr();
+
+  // Grades
+  static String get grade1 => 'grade_1'.tr();
+  static String get grade2 => 'grade_2'.tr();
+  static String get grade3 => 'grade_3'.tr();
+
+  // Surgery statuses
+  static String get statusFullyRecovered => 'status_fully_recovered'.tr();
+  static String get statusOngoingRehab => 'status_ongoing_rehab'.tr();
+  static String get statusLimited => 'status_limited'.tr();
+  static String get statusUnknown => 'status_unknown'.tr();
+
   // Workload Monitoring
   static String get workloadMonitoring => 'workload_monitoring'.tr();
   static String get acuteLoad => 'acute_load'.tr();

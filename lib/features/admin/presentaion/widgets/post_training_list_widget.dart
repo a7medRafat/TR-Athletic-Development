@@ -46,8 +46,8 @@ class PostCardWidget extends StatelessWidget {
         SessionRowData(
           icon: Icons.speed_rounded,
           label: AppStrings.rpe,
-          value: '${s.rpe}/10',
-          valueColor: _scale(s.rpe, 10, higher: false),
+          value: '${s.rpe}/9',
+          valueColor: _scale(s.rpe, 9, higher: false),
           bold: true,
         ),
         if (s.trainingDuration != null)

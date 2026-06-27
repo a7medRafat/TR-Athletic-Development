@@ -36,17 +36,35 @@ class OverviewTabWidget extends StatelessWidget {
           SizedBox(height: 4.h),
           _StatsGrid(
             items: [
+              // ── Readiness & performance ──
+              _StatItem(
+                label: AppStrings.avgReadiness,
+                value: state.avgReadiness > 0
+                    ? state.avgReadiness.toStringAsFixed(1)
+                    : '—',
+                icon: Icons.directions_run_rounded,
+                color: _readinessColor(state.avgReadiness),
+              ),
+              _StatItem(
+                label: AppStrings.avgRpe,
+                value: state.avgRpe > 0
+                    ? state.avgRpe.toStringAsFixed(1)
+                    : '—',
+                icon: Icons.speed_rounded,
+                color: _rpeColor(state.avgRpe),
+              ),
               _StatItem(
                 label: AppStrings.trainingLoad,
                 value: state.totalTrainingLoad > 0
-                    ? state.totalTrainingLoad.toStringAsFixed(1)
+                    ? state.totalTrainingLoad.toStringAsFixed(0)
                     : '—',
                 icon: Icons.bolt_rounded,
                 color: AppColors.accent,
               ),
+              // ── Sessions ──
               _StatItem(
-                label: AppStrings.totalSubmissions,
-                value: '${state.totalSessions}',
+                label: 'Sessions',
+                value: '${state.preSessions.length}',
                 icon: Icons.bar_chart_rounded,
                 color: AppColors.primary,
               ),
@@ -62,22 +80,7 @@ class OverviewTabWidget extends StatelessWidget {
                 icon: Icons.fitness_center_rounded,
                 color: AppColors.accent,
               ),
-              _StatItem(
-                label: AppStrings.avgRpe,
-                value: state.avgRpe > 0
-                    ? state.avgRpe.toStringAsFixed(1)
-                    : '—',
-                icon: Icons.speed_rounded,
-                color: _rpeColor(state.avgRpe),
-              ),
-              _StatItem(
-                label: AppStrings.avgReadiness,
-                value: state.avgReadiness > 0
-                    ? state.avgReadiness.toStringAsFixed(1)
-                    : '—',
-                icon: Icons.directions_run_rounded,
-                color: _readinessColor(state.avgReadiness),
-              ),
+              // ── Recovery & health ──
               _StatItem(
                 label: 'Avg. Fatigue',
                 value: avgFatigue > 0 ? avgFatigue.toStringAsFixed(1) : '—',

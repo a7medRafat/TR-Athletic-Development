@@ -21,8 +21,8 @@ class ReadinessCalculator {
     // Sleep hours (0-20): cap at 8h
     score += (s.hoursOfSleep.clamp(0, 8) / 8) * 20;
 
-    // Sleep quality (0-5): scale 1-10
-    score += ((s.sleepQuality - 1) / 9) * 5;
+    // Sleep quality (0-5): scale 1-5
+    score += ((s.sleepQuality - 1) / 4) * 5;
 
     // Energy level (0-20): scale 1-10
     score += ((s.energyLevel - 1) / 9) * 20;
@@ -33,8 +33,8 @@ class ReadinessCalculator {
     // Muscle soreness (0-15): inverted scale 1-10
     score += ((10 - s.muscleSoreness) / 9) * 15;
 
-    // Mood (0-10): scale 1-5
-    score += ((s.mood - 1) / 4) * 10;
+    // Mood (0-10): scale 1-10
+    score += ((s.mood - 1) / 9) * 10;
 
     // Stress level (0-10): inverted scale 1-10
     score += ((10 - s.stressLevel) / 9) * 10;

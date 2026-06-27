@@ -36,10 +36,7 @@ class RegisterHeaderWidget extends StatelessWidget {
         SizedBox(height: 8.h),
         Text(
           AppStrings.createAccount,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
         ),
       ],
     );

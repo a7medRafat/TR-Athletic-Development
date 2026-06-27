@@ -49,11 +49,7 @@ class WorkloadTab extends StatelessWidget {
           SizedBox(height: 14.h),
           _MetricCardsGrid(metrics: metrics),
           SizedBox(height: 20.h),
-          _ChartCard(
-            title: AppStrings.dailyLoadChart,
-            subtitle: AppStrings.last28Days,
-            child: _DailyLoadBarChart(dailyLoads: metrics.dailyLoads),
-          ),
+          _DailyLoadCard(dailyLoads: metrics.dailyLoads),
           SizedBox(height: 14.h),
           _ChartCard(
             title: AppStrings.acuteVsChronic,
@@ -383,6 +379,165 @@ class _MetricCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── Daily Load Card with week/month filter ────────────────────────────────────
+
+enum _LoadRange { week, month }
+
+class _DailyLoadCard extends StatefulWidget {
+  final List<DailyLoad> dailyLoads; // always 28 entries, newest last
+
+  const _DailyLoadCard({required this.dailyLoads});
+
+  @override
+  State<_DailyLoadCard> createState() => _DailyLoadCardState();
+}
+
+class _DailyLoadCardState extends State<_DailyLoadCard> {
+  _LoadRange _range = _LoadRange.month;
+
+  List<DailyLoad> get _filtered => _range == _LoadRange.week
+      ? widget.dailyLoads.sublist(21) // last 7 of 28
+      : widget.dailyLoads;
+
+  String get _subtitle =>
+      _range == _LoadRange.week ? 'This Week (7 days)' : 'This Month (28 days)';
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 10.h),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.cardShadow,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppStrings.dailyLoadChart,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      _subtitle,
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _ArrowFilterToggle(
+                range: _range,
+                onChanged: (r) => setState(() => _range = r),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          _DailyLoadBarChart(dailyLoads: _filtered),
+        ],
+      ),
+    );
+  }
+}
+
+class _ArrowFilterToggle extends StatelessWidget {
+  final _LoadRange range;
+  final ValueChanged<_LoadRange> onChanged;
+
+  const _ArrowFilterToggle({required this.range, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final isWeek = range == _LoadRange.week;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _ArrowBtn(
+          icon: Icons.chevron_left_rounded,
+          active: isWeek,
+          onTap: () => onChanged(_LoadRange.week),
+          tooltip: 'This Week',
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6.w),
+          child: Text(
+            isWeek ? 'Week' : 'Month',
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+        _ArrowBtn(
+          icon: Icons.chevron_right_rounded,
+          active: !isWeek,
+          onTap: () => onChanged(_LoadRange.month),
+          tooltip: 'This Month',
+        ),
+      ],
+    );
+  }
+}
+
+class _ArrowBtn extends StatelessWidget {
+  final IconData icon;
+  final bool active;
+  final VoidCallback onTap;
+  final String tooltip;
+
+  const _ArrowBtn({
+    required this.icon,
+    required this.active,
+    required this.onTap,
+    required this.tooltip,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 28.r,
+          height: 28.r,
+          decoration: BoxDecoration(
+            color: active
+                ? AppColors.primary.withValues(alpha: 0.12)
+                : AppColors.surfaceVariant,
+            borderRadius: BorderRadius.circular(6.r),
+          ),
+          child: Icon(
+            icon,
+            size: 18.sp,
+            color: active ? AppColors.primary : AppColors.textSecondary,
+          ),
+        ),
       ),
     );
   }

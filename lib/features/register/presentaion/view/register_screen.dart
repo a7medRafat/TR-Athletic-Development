@@ -11,9 +11,9 @@ import '../logic/register_cubit.dart';
 import '../logic/register_state.dart';
 import '../widgets/register_email_field_widget.dart';
 import '../widgets/register_full_name_field_widget.dart';
+import '../widgets/register_medical_step.dart';
 import '../widgets/register_password_field_widget.dart';
 import '../widgets/register_phone_field_widget.dart';
-import '../widgets/register_submit_button_widget.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -36,6 +36,8 @@ class _RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<_RegisterView> {
   final _formKey = GlobalKey<FormState>();
+  final _medicalKey = GlobalKey<RegisterMedicalStepState>();
+
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
@@ -43,10 +45,10 @@ class _RegisterViewState extends State<_RegisterView> {
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
-  final _previousInjuriesController = TextEditingController();
 
   String? _selectedGender;
   bool _genderTouched = false;
+  int _step = 0;
 
   @override
   void dispose() {
@@ -57,15 +59,18 @@ class _RegisterViewState extends State<_RegisterView> {
     _ageController.dispose();
     _weightController.dispose();
     _heightController.dispose();
-    _previousInjuriesController.dispose();
     super.dispose();
   }
 
-  void _submit(BuildContext context) {
+  void _nextStep() {
     setState(() => _genderTouched = true);
     final formValid = _formKey.currentState?.validate() ?? false;
     if (!formValid || _selectedGender == null) return;
+    setState(() => _step = 1);
+  }
 
+  void _submit(BuildContext context) {
+    final medical = _medicalKey.currentState!.getMedicalHistory();
     context.read<RegisterCubit>().register(
       email: _emailController.text.trim(),
       password: _passwordController.text,
@@ -75,9 +80,7 @@ class _RegisterViewState extends State<_RegisterView> {
       weight: double.tryParse(_weightController.text.trim()),
       height: double.tryParse(_heightController.text.trim()),
       gender: _selectedGender,
-      previousInjuries: _previousInjuriesController.text.trim().isEmpty
-          ? null
-          : _previousInjuriesController.text.trim(),
+      medicalHistory: medical.toMap(),
     );
   }
 
@@ -99,115 +102,385 @@ class _RegisterViewState extends State<_RegisterView> {
           }
         },
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 8.h),
-                    RegisterFullNameFieldWidget(
-                      controller: _fullNameController,
-                    ),
-                    SizedBox(height: 16.h),
-                    RegisterPhoneFieldWidget(controller: _phoneController),
-                    SizedBox(height: 16.h),
-
-                    // Age
-                    _AgeField(controller: _ageController),
-                    SizedBox(height: 16.h),
-
-                    // Weight + Height
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _DecimalField(
-                            controller: _weightController,
-                            label: AppStrings.weightKg,
-                            hint: AppStrings.weightHint,
-                            icon: Icons.monitor_weight_outlined,
-                            emptyError: AppStrings.weightRequired,
-                            invalidError: AppStrings.invalidWeight,
+          child: Column(
+            children: [
+              _StepIndicator(step: _step),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24.w,
+                    vertical: 16.h,
+                  ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
+                    child: _step == 0
+                        ? _GeneralStep(
+                            key: const ValueKey('step0'),
+                            formKey: _formKey,
+                            fullNameController: _fullNameController,
+                            phoneController: _phoneController,
+                            emailController: _emailController,
+                            passwordController: _passwordController,
+                            ageController: _ageController,
+                            weightController: _weightController,
+                            heightController: _heightController,
+                            selectedGender: _selectedGender,
+                            genderTouched: _genderTouched,
+                            onGenderSelect: (g) =>
+                                setState(() => _selectedGender = g),
+                            onNext: _nextStep,
+                            onSignIn: () => Navigator.of(context).pop(),
+                          )
+                        : _MedicalStep(
+                            key: const ValueKey('step1'),
+                            medicalKey: _medicalKey,
+                            onBack: () => setState(() => _step = 0),
+                            onSubmit: () => _submit(context),
                           ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: _DecimalField(
-                            controller: _heightController,
-                            label: AppStrings.heightCm,
-                            hint: AppStrings.heightHint,
-                            icon: Icons.straighten_rounded,
-                            emptyError: AppStrings.heightRequired,
-                            invalidError: AppStrings.invalidHeight,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-
-                    // Gender selector
-                    _GenderSelector(
-                      selected: _selectedGender,
-                      touched: _genderTouched,
-                      onSelect: (g) => setState(() => _selectedGender = g),
-                    ),
-                    SizedBox(height: 16.h),
-
-                    // Previous injuries (optional)
-                    AppNewTextFormField(
-                      controller: _previousInjuriesController,
-                      inputType: InputType.text,
-                      textInputAction: TextInputAction.next,
-                      labelName: AppStrings.previousInjuries,
-                      hintText: AppStrings.previousInjuriesHint,
-                      maxLines: 2,
-                      validator: (_) => null,
-                    ),
-                    SizedBox(height: 16.h),
-
-                    RegisterEmailFieldWidget(controller: _emailController),
-                    SizedBox(height: 16.h),
-                    RegisterPasswordFieldWidget(
-                      controller: _passwordController,
-                      onSubmit: () => _submit(context),
-                    ),
-                    SizedBox(height: 32.h),
-                    RegisterSubmitButtonWidget(
-                      onPressed: () => _submit(context),
-                    ),
-                    SizedBox(height: 16.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppStrings.alreadyHaveAccount,
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.of(context).pop(),
-                          child: Text(
-                            AppStrings.signIn,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
+    );
+  }
+}
+
+// ── Step indicator ────────────────────────────────────────────────────────────
+
+class _StepIndicator extends StatelessWidget {
+  final int step;
+
+  const _StepIndicator({required this.step});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _StepDot(index: 0, current: step, label: AppStrings.stepGeneral),
+              Expanded(
+                child: Container(
+                  height: 2,
+                  color: step >= 1 ? AppColors.primary : AppColors.border,
+                ),
+              ),
+              _StepDot(index: 1, current: step, label: AppStrings.stepMedical),
+            ],
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            step == 0 ? AppStrings.step1Title : AppStrings.step2Title,
+            style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepDot extends StatelessWidget {
+  final int index;
+  final int current;
+  final String label;
+
+  const _StepDot({
+    required this.index,
+    required this.current,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDone = current > index;
+    final isActive = current == index;
+    return Column(
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 28.w,
+          height: 28.w,
+          decoration: BoxDecoration(
+            color: isDone || isActive ? AppColors.primary : AppColors.border,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: isDone
+                ? Icon(
+                    Icons.check_rounded,
+                    size: 14.sp,
+                    color: AppColors.surface,
+                  )
+                : Text(
+                    '${index + 1}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: isActive
+                          ? AppColors.surface
+                          : AppColors.textSecondary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+          ),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10.sp,
+            color: isActive || isDone
+                ? AppColors.primary
+                : AppColors.textSecondary,
+            fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Step 1: General data ──────────────────────────────────────────────────────
+
+class _GeneralStep extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController fullNameController;
+  final TextEditingController phoneController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final TextEditingController ageController;
+  final TextEditingController weightController;
+  final TextEditingController heightController;
+  final String? selectedGender;
+  final bool genderTouched;
+  final ValueChanged<String> onGenderSelect;
+  final VoidCallback onNext;
+  final VoidCallback onSignIn;
+
+  const _GeneralStep({
+    super.key,
+    required this.formKey,
+    required this.fullNameController,
+    required this.phoneController,
+    required this.emailController,
+    required this.passwordController,
+    required this.ageController,
+    required this.weightController,
+    required this.heightController,
+    required this.selectedGender,
+    required this.genderTouched,
+    required this.onGenderSelect,
+    required this.onNext,
+    required this.onSignIn,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: 8.h),
+          RegisterFullNameFieldWidget(controller: fullNameController),
+          SizedBox(height: 16.h),
+          RegisterPhoneFieldWidget(controller: phoneController),
+          SizedBox(height: 16.h),
+          _AgeField(controller: ageController),
+          SizedBox(height: 16.h),
+          Row(
+            children: [
+              Expanded(
+                child: _DecimalField(
+                  controller: weightController,
+                  label: AppStrings.weightKg,
+                  hint: AppStrings.weightHint,
+                  icon: Icons.monitor_weight_outlined,
+                  emptyError: AppStrings.weightRequired,
+                  invalidError: AppStrings.invalidWeight,
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: _DecimalField(
+                  controller: heightController,
+                  label: AppStrings.heightCm,
+                  hint: AppStrings.heightHint,
+                  icon: Icons.straighten_rounded,
+                  emptyError: AppStrings.heightRequired,
+                  invalidError: AppStrings.invalidHeight,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+          _GenderSelector(
+            selected: selectedGender,
+            touched: genderTouched,
+            onSelect: onGenderSelect,
+          ),
+          SizedBox(height: 16.h),
+          RegisterEmailFieldWidget(controller: emailController),
+          SizedBox(height: 16.h),
+          RegisterPasswordFieldWidget(
+            controller: passwordController,
+            onSubmit: onNext,
+          ),
+          SizedBox(height: 32.h),
+          BlocBuilder<RegisterCubit, RegisterState>(
+            builder: (context, state) => FilledButton(
+              onPressed: state.isLoading ? null : onNext,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: EdgeInsets.symmetric(vertical: 14.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppStrings.next,
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(width: 6.w),
+                  Icon(Icons.arrow_forward_rounded, size: 18.sp),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                AppStrings.alreadyHaveAccount,
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              GestureDetector(
+                onTap: onSignIn,
+                child: Text(
+                  AppStrings.signIn,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Step 2: Medical history ───────────────────────────────────────────────────
+
+class _MedicalStep extends StatelessWidget {
+  final GlobalKey<RegisterMedicalStepState> medicalKey;
+  final VoidCallback onBack;
+  final VoidCallback onSubmit;
+
+  const _MedicalStep({
+    super.key,
+    required this.medicalKey,
+    required this.onBack,
+    required this.onSubmit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        RegisterMedicalStep(key: medicalKey),
+        SizedBox(height: 32.h),
+        BlocBuilder<RegisterCubit, RegisterState>(
+          builder: (context, state) => Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: state.isLoading ? null : onBack,
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    side: const BorderSide(color: AppColors.primary),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.arrow_back_rounded,
+                        size: 18.sp,
+                        color: AppColors.primary,
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        AppStrings.back,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                flex: 2,
+                child: FilledButton(
+                  onPressed: state.isLoading ? null : onSubmit,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: state.isLoading
+                      ? SizedBox(
+                          height: 18.h,
+                          width: 18.h,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          AppStrings.register,
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 16.h),
+      ],
     );
   }
 }
@@ -323,14 +596,14 @@ class _GenderSelector extends StatelessWidget {
               selected: selected,
               onSelect: onSelect,
             ),
-            SizedBox(width: 8.w),
-            _GenderOption(
-              label: AppStrings.otherGender,
-              icon: Icons.person_outline_rounded,
-              value: 'other',
-              selected: selected,
-              onSelect: onSelect,
-            ),
+            // SizedBox(width: 8.w),
+            // _GenderOption(
+            //   label: AppStrings.otherGender,
+            //   icon: Icons.person_outline_rounded,
+            //   value: 'other',
+            //   selected: selected,
+            //   onSelect: onSelect,
+            // ),
           ],
         ),
         if (hasError)
