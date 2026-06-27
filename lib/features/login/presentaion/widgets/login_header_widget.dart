@@ -18,13 +18,6 @@ class LoginHeaderWidget extends StatelessWidget {
           fit: BoxFit.cover,
         ),
         SizedBox(height: 16.h),
-        Text(
-          AppStrings.signInToContinue,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: AppColors.textSecondary,
-          ),
-        ),
       ],
     );
   }
