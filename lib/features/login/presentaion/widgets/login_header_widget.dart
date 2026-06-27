@@ -13,19 +13,11 @@ class LoginHeaderWidget extends StatelessWidget {
       children: [
         Image.asset(
           'assets/images/app-logo.png',
-          width: 100.w,
+          width: 500.w,
           height: 100.w,
+          fit: BoxFit.cover,
         ),
         SizedBox(height: 16.h),
-        Text(
-          AppStrings.appName,
-          style: TextStyle(
-            fontSize: 24.sp,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        SizedBox(height: 8.h),
         Text(
           AppStrings.signInToContinue,
           style: TextStyle(
