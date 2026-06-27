@@ -25,6 +25,37 @@ class AdminUsersCubit extends Cubit<AdminUsersState> {
   void setFilter(String filter) => emit(state.copyWith(statusFilter: filter));
   void setReadinessFilter(String filter) =>
       emit(state.copyWith(readinessFilter: filter));
+
+  // Unified single-row filter: all | ready | not_ready | pending | disabled
+  void setUnifiedFilter(String filter) {
+    switch (filter) {
+      case 'ready':
+        emit(state.copyWith(
+            unifiedFilter: filter,
+            statusFilter: 'approved',
+            readinessFilter: 'ready'));
+      case 'not_ready':
+        emit(state.copyWith(
+            unifiedFilter: filter,
+            statusFilter: 'approved',
+            readinessFilter: 'not_ready'));
+      case 'pending':
+        emit(state.copyWith(
+            unifiedFilter: filter,
+            statusFilter: 'pending',
+            readinessFilter: 'all'));
+      case 'disabled':
+        emit(state.copyWith(
+            unifiedFilter: filter,
+            statusFilter: 'disabled',
+            readinessFilter: 'all'));
+      default:
+        emit(state.copyWith(
+            unifiedFilter: 'all',
+            statusFilter: 'all',
+            readinessFilter: 'all'));
+    }
+  }
   void setSearch(String q) => emit(state.copyWith(searchQuery: q));
 
   Future<void> approveUser(String uid) async {

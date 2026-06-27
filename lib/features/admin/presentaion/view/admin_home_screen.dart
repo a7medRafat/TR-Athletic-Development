@@ -10,6 +10,7 @@ import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/readiness_calculator.dart';
 import '../logic/admin_users_cubit.dart';
 import '../logic/admin_users_state.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../widgets/user_list_tile_widget.dart';
 import '../widgets/user_request_card_widget.dart';
 import 'admin_user_detail_screen.dart';
@@ -39,91 +40,42 @@ class _AdminViewState extends State<_AdminView> {
   int _tab = 0;
 
   void _showLogoutConfirm() {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text(AppStrings.logout),
-        content: Text(AppStrings.signOutConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              FirebaseAuth.instance.signOut();
-            },
-            child: Text(
-              AppStrings.logout,
-              style: const TextStyle(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
+    AppConfirmDialog.show(
+      context,
+      title: AppStrings.logout,
+      message: AppStrings.signOutConfirm,
+      confirmLabel: AppStrings.logout,
+      confirmColor: AppColors.error,
+      onConfirm: () => FirebaseAuth.instance.signOut(),
     );
   }
 
   void _showRejectDialog(String uid, AdminUsersCubit cubit) {
     final ctrl = TextEditingController();
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text(AppStrings.rejectConfirm),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            labelText: AppStrings.rejectionReason,
-            hintText: AppStrings.rejectionReasonHint,
-          ),
-          maxLines: 2,
+    AppConfirmDialog.show(
+      context,
+      title: AppStrings.rejectConfirm,
+      message: AppStrings.rejectionReason,
+      confirmLabel: AppStrings.reject,
+      confirmColor: AppColors.error,
+      extraContent: TextField(
+        controller: ctrl,
+        decoration: InputDecoration(
+          labelText: AppStrings.rejectionReason,
+          hintText: AppStrings.rejectionReasonHint,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              cubit.rejectUser(uid, reason: ctrl.text.trim());
-            },
-            child: Text(
-              AppStrings.reject,
-              style: const TextStyle(color: AppColors.error),
-            ),
-          ),
-        ],
+        maxLines: 2,
       ),
+      onConfirm: () => cubit.rejectUser(uid, reason: ctrl.text.trim()),
     );
   }
 
   void _showConfirmDialog(String title, String message, VoidCallback onConfirm) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              onConfirm();
-            },
-            child: Text(
-              AppStrings.confirmAction,
-              style: const TextStyle(color: AppColors.primary),
-            ),
-          ),
-        ],
-      ),
+    AppConfirmDialog.show(
+      context,
+      title: title,
+      message: message,
+      onConfirm: onConfirm,
     );
   }
 
@@ -715,31 +667,6 @@ class _UsersTab extends StatelessWidget {
                 onChanged: cubit.setSearch,
               ),
               SizedBox(height: 10.h),
-              // Status filters
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final f in [
-                      ('all', AppStrings.filterAll),
-                      ('approved', AppStrings.statusApproved),
-                      ('pending', AppStrings.statusPending),
-                      ('rejected', AppStrings.statusRejected),
-                      ('disabled', AppStrings.statusDisabled),
-                    ])
-                      Padding(
-                        padding: EdgeInsets.only(right: 8.w),
-                        child: _FilterChip(
-                          label: f.$2,
-                          selected: state.statusFilter == f.$1,
-                          onTap: () => cubit.setFilter(f.$1),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 8.h),
-              // Readiness filters
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -748,16 +675,16 @@ class _UsersTab extends StatelessWidget {
                       padding: EdgeInsets.only(right: 8.w),
                       child: _FilterChip(
                         label: AppStrings.filterAll,
-                        selected: state.readinessFilter == 'all',
-                        onTap: () => cubit.setReadinessFilter('all'),
+                        selected: state.unifiedFilter == 'all',
+                        onTap: () => cubit.setUnifiedFilter('all'),
                       ),
                     ),
                     Padding(
                       padding: EdgeInsets.only(right: 8.w),
                       child: _FilterChip(
                         label: AppStrings.readyToTrain,
-                        selected: state.readinessFilter == 'ready',
-                        onTap: () => cubit.setReadinessFilter('ready'),
+                        selected: state.unifiedFilter == 'ready',
+                        onTap: () => cubit.setUnifiedFilter('ready'),
                         activeColor: AppColors.success,
                         icon: Icons.check_circle_rounded,
                       ),
@@ -766,10 +693,28 @@ class _UsersTab extends StatelessWidget {
                       padding: EdgeInsets.only(right: 8.w),
                       child: _FilterChip(
                         label: AppStrings.notReadyToTrain,
-                        selected: state.readinessFilter == 'not_ready',
-                        onTap: () => cubit.setReadinessFilter('not_ready'),
+                        selected: state.unifiedFilter == 'not_ready',
+                        onTap: () => cubit.setUnifiedFilter('not_ready'),
                         activeColor: AppColors.error,
                         icon: Icons.cancel_rounded,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: _FilterChip(
+                        label: AppStrings.statusPending,
+                        selected: state.unifiedFilter == 'pending',
+                        onTap: () => cubit.setUnifiedFilter('pending'),
+                        activeColor: AppColors.warning,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: _FilterChip(
+                        label: AppStrings.statusDisabled,
+                        selected: state.unifiedFilter == 'disabled',
+                        onTap: () => cubit.setUnifiedFilter('disabled'),
+                        activeColor: AppColors.textSecondary,
                       ),
                     ),
                   ],

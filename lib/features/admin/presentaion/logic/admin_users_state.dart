@@ -7,6 +7,7 @@ class AdminUsersState extends Equatable {
   final List<AdminUserModel> allUsers;
   final String statusFilter;
   final String readinessFilter; // 'all' | 'ready' | 'not_ready'
+  final String unifiedFilter; // 'all' | 'ready' | 'not_ready' | 'pending' | 'disabled'
   final String searchQuery;
   final bool isLoading;
   final String? errorMessage;
@@ -16,6 +17,7 @@ class AdminUsersState extends Equatable {
     this.allUsers = const [],
     this.statusFilter = 'all',
     this.readinessFilter = 'all',
+    this.unifiedFilter = 'all',
     this.searchQuery = '',
     this.isLoading = false,
     this.errorMessage,
@@ -54,6 +56,7 @@ class AdminUsersState extends Equatable {
     List<AdminUserModel>? allUsers,
     String? statusFilter,
     String? readinessFilter,
+    String? unifiedFilter,
     String? searchQuery,
     bool? isLoading,
     String? errorMessage,
@@ -64,6 +67,7 @@ class AdminUsersState extends Equatable {
         allUsers: allUsers ?? this.allUsers,
         statusFilter: statusFilter ?? this.statusFilter,
         readinessFilter: readinessFilter ?? this.readinessFilter,
+        unifiedFilter: unifiedFilter ?? this.unifiedFilter,
         searchQuery: searchQuery ?? this.searchQuery,
         isLoading: isLoading ?? this.isLoading,
         errorMessage: clearMessages ? null : errorMessage ?? this.errorMessage,
@@ -76,6 +80,7 @@ class AdminUsersState extends Equatable {
         allUsers,
         statusFilter,
         readinessFilter,
+        unifiedFilter,
         searchQuery,
         isLoading,
         errorMessage,

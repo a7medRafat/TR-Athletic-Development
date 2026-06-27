@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../../features/post_training/data/models/post_training_model.dart';
 import '../../../../features/pre_training/data/models/pre_training_model.dart';
 import '../../data/models/admin_user_model.dart';
@@ -54,38 +55,21 @@ class _DetailView extends StatelessWidget {
 
   void _showRejectDialog(BuildContext context, AdminUserDetailCubit cubit) {
     final ctrl = TextEditingController();
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
+    AppConfirmDialog.show(
+      context,
+      title: AppStrings.rejectConfirm,
+      message: AppStrings.rejectionReason,
+      confirmLabel: AppStrings.reject,
+      confirmColor: AppColors.error,
+      extraContent: TextField(
+        controller: ctrl,
+        decoration: InputDecoration(
+          labelText: AppStrings.rejectionReason,
+          hintText: AppStrings.rejectionReasonHint,
         ),
-        title: Text(AppStrings.rejectConfirm),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            labelText: AppStrings.rejectionReason,
-            hintText: AppStrings.rejectionReasonHint,
-          ),
-          maxLines: 2,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              cubit.rejectUser(reason: ctrl.text.trim());
-            },
-            child: Text(
-              AppStrings.reject,
-              style: const TextStyle(color: AppColors.error),
-            ),
-          ),
-        ],
+        maxLines: 2,
       ),
+      onConfirm: () => cubit.rejectUser(reason: ctrl.text.trim()),
     );
   }
 
@@ -95,31 +79,11 @@ class _DetailView extends StatelessWidget {
     String message,
     VoidCallback onConfirm,
   ) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              onConfirm();
-            },
-            child: Text(
-              AppStrings.confirmAction,
-              style: const TextStyle(color: AppColors.primary),
-            ),
-          ),
-        ],
-      ),
+    AppConfirmDialog.show(
+      context,
+      title: title,
+      message: message,
+      onConfirm: onConfirm,
     );
   }
 
@@ -166,27 +130,6 @@ class _DetailView extends StatelessWidget {
                     ),
                   ),
                   iconTheme: const IconThemeData(color: AppColors.textPrimary),
-                  bottom: TabBar(
-                    labelColor: AppColors.primary,
-                    unselectedLabelColor: AppColors.textSecondary,
-                    indicatorColor: AppColors.primary,
-                    indicatorWeight: 3,
-                    labelStyle: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    tabs: [
-                      const Tab(text: 'Overview'),
-                      Tab(
-                        text:
-                            '${AppStrings.preTrainingSessions} (${state.preSessions.length})',
-                      ),
-                      Tab(
-                        text:
-                            '${AppStrings.postTrainingSessions} (${state.postSessions.length})',
-                      ),
-                    ],
-                  ),
                 ),
                 if (state.user != null)
                   SliverToBoxAdapter(
@@ -218,6 +161,26 @@ class _DetailView extends StatelessWidget {
                       },
                     ),
                   ),
+                SliverToBoxAdapter(
+                  child: ColoredBox(
+                    color: AppColors.surface,
+                    child: TabBar(
+                      labelColor: AppColors.primary,
+                      unselectedLabelColor: AppColors.textSecondary,
+                      indicatorColor: AppColors.primary,
+                      indicatorWeight: 3,
+                      labelStyle: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      tabs: [
+                        const Tab(text: 'Overview'),
+                        Tab(text: AppStrings.preTrainingSessions),
+                        Tab(text: AppStrings.postTrainingSessions),
+                      ],
+                    ),
+                  ),
+                ),
               ],
               body: state.user == null
                   ? Center(child: Text(AppStrings.userNotFound))
@@ -576,13 +539,12 @@ class _OverviewTab extends StatelessWidget {
         .length;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
+      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 32.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Stats grid ────────────────────────────────────────────────
-          _SectionTitle(title: AppStrings.analytics),
-          SizedBox(height: 10.h),
+          SizedBox(height: 4.h),
           _StatsGrid(
             items: [
               _StatItem(

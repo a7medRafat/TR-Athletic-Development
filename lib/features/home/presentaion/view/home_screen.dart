@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
 import '../../../post_training/presentaion/view/post_training_screen.dart';
 import '../../../pre_training/presentaion/view/pre_training_screen.dart';
 import '../../../settings/data/models/user_profile_model.dart';
@@ -58,31 +59,13 @@ class _HomeView extends StatelessWidget {
   }
 
   void _showLogoutConfirm(BuildContext context, SettingsCubit cubit) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Text(AppStrings.logout),
-        content: Text(AppStrings.signOutConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(ctx).pop();
-              await cubit.signOut();
-            },
-            child: Text(
-              AppStrings.logout,
-              style: const TextStyle(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
+    AppConfirmDialog.show(
+      context,
+      title: AppStrings.logout,
+      message: AppStrings.signOutConfirm,
+      confirmLabel: AppStrings.logout,
+      confirmColor: AppColors.error,
+      onConfirm: () => cubit.signOut(),
     );
   }
 
