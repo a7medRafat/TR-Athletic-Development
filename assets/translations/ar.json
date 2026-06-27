@@ -1,6 +1,5 @@
 {
   "app_name": "TR Athletic Development",
-
   "email": "البريد الإلكتروني",
   "password": "كلمة المرور",
   "login": "تسجيل الدخول",
@@ -10,7 +9,6 @@
   "email_required": "البريد الإلكتروني مطلوب",
   "password_required": "كلمة المرور مطلوبة",
   "invalid_email": "يرجى إدخال بريد إلكتروني صحيح",
-
   "pre_training": "ما قبل التدريب",
   "post_training": "ما بعد التدريب",
   "pre_training_title": "تقييم ما قبل التدريب",
@@ -26,7 +24,6 @@
   "pain_location": "موضع الألم",
   "pain_location_hint": "صف موضع الألم",
   "readiness_to_train": "هل أنت مستعد للتدريب اليوم؟",
-
   "rpe": "مستوى المجهود (RPE)",
   "completed_workout": "هل أكملت التمرين؟",
   "felt_pain": "هل شعرت بألم؟",
@@ -37,7 +34,6 @@
   "training_duration": "مدة التدريب (دقيقة)",
   "training_duration_hint": "مثال: 60",
   "training_load": "حمل التدريب",
-
   "yes": "نعم",
   "no": "لا",
   "submit": "إرسال",
@@ -48,7 +44,6 @@
   "high": "مرتفع",
   "submit_success": "تم الإرسال بنجاح!",
   "submit_error": "فشل الإرسال. يرجى المحاولة مرة أخرى.",
-
   "register": "إنشاء حساب",
   "create_account": "إنشاء حساب جديد",
   "full_name": "الاسم الكامل",
@@ -62,7 +57,6 @@
   "already_have_account": "لديك حساب بالفعل؟ ",
   "dont_have_account": "ليس لديك حساب؟ ",
   "sign_in": "تسجيل الدخول",
-
   "settings": "الإعدادات",
   "edit_profile": "تعديل الملف الشخصي",
   "update_profile": "تحديث الملف الشخصي",
@@ -72,11 +66,9 @@
   "change_language": "تغيير اللغة",
   "english": "الإنجليزية",
   "arabic": "العربية",
-
   "select_photo_source": "اختر الصورة",
   "from_gallery": "مكتبة الصور",
   "from_camera": "الكاميرا",
-
   "pending_title": "في انتظار الموافقة",
   "pending_subtitle": "حسابك قيد المراجعة. سيوافق المسؤول على وصولك قريباً.",
   "pending_note": "ستتم إعادة توجيهك تلقائياً بمجرد الموافقة على حسابك.",
@@ -84,7 +76,6 @@
   "rejected_subtitle": "لم تتم الموافقة على تسجيل حسابك في الوقت الحالي.",
   "disabled_title": "الحساب معطّل",
   "disabled_subtitle": "تم تعطيل حسابك مؤقتاً. يرجى التواصل مع المسؤول.",
-
   "admin_dashboard": "لوحة الإدارة",
   "requests": "الطلبات",
   "all_users": "جميع المستخدمين",
@@ -117,19 +108,16 @@
   "user_rejected": "تم رفض المستخدم",
   "user_enabled": "تم تفعيل حساب المستخدم",
   "user_disabled": "تم تعطيل حساب المستخدم",
-
   "status_pending": "قيد الانتظار",
   "status_approved": "مُعتمد",
   "status_rejected": "مرفوض",
   "status_disabled": "معطّل",
-
   "sign_out_confirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
   "welcome_back": "أهلاً بعودتك",
   "todays_check_in": "تقييم اليوم",
   "track_training": "تتبع جاهزيتك وتعافيك من التدريب",
   "pre_training_subtitle": "فحص النوم والإجهاد والجاهزية",
   "post_training_subtitle": "فحص الجهد والألم والتعافي",
-
   "admin_panel": "لوحة الإدارة",
   "administrator": "مسؤول النظام",
   "users_tab": "المستخدمون",
@@ -153,7 +141,6 @@
   "not_ready_to_train": "غير جاهز",
   "previous_injuries": "إصابات سابقة",
   "previous_injuries_hint": "مثال: رباط الركبة، آلام الظهر",
-
   "sleep": "النوم",
   "fatigue": "الإجهاد",
   "muscle_soreness_short": "آلام العضلات",
@@ -165,21 +152,17 @@
   "pain": "ألم",
   "injury": "إصابة",
   "reported": "تم الإبلاغ",
-
   "very_easy": "سهل جداً",
   "max_effort": "أقصى جهد",
   "zero_hrs": "٠ س",
   "twelve_hrs": "١٢ س",
-
   "personal_information": "المعلومات الشخصية",
   "update_personal_info": "حدّث معلوماتك الشخصية",
   "no_changes": "لا توجد تغييرات",
   "sign_in_to_continue": "سجّل دخولك للمتابعة",
-
   "threshold_label": "الحد: {value}/100",
   "percent_ready": "{percent}% جاهز",
   "sleep_quality_display": "جودة {quality}/5",
-
   "age": "العمر",
   "age_hint": "عمرك",
   "age_required": "العمر مطلوب",
@@ -197,7 +180,6 @@
   "male": "ذكر",
   "female": "أنثى",
   "other_gender": "آخر",
-
   "workload_monitoring": "الحمل التدريبي",
   "acute_load": "الحمل الحاد (7 أيام)",
   "chronic_load": "الحمل المزمن (28 يوم)",
@@ -216,14 +198,12 @@
   "safe_zone": "النطاق الآمن",
   "last_28_days": "آخر 28 يوماً",
   "arbitrary_units": "وحدة",
-
   "next": "التالي",
   "back": "رجوع",
   "step_general": "عام",
   "step_medical": "طبي",
   "step_1_title": "الخطوة 1 من 2 — المعلومات العامة",
   "step_2_title": "الخطوة 2 من 2 — التاريخ الطبي والإصابات",
-
   "medical_prev_muscle": "إصابات العضلات السابقة",
   "medical_prev_joint": "إصابات المفاصل والأربطة السابقة",
   "medical_surgery_hist": "تاريخ العمليات الجراحية",
@@ -231,7 +211,6 @@
   "medical_q_muscle": "هل سبق أن تعرضت لإصابات عضلية؟",
   "medical_q_joint": "هل سبق أن تعرضت لإصابات في المفاصل أو الأربطة؟",
   "medical_q_surgery": "هل خضعت لعمليات جراحية سابقة؟",
-
   "medical_side": "الجانب",
   "medical_grade": "الدرجة",
   "medical_date_injury": "تاريخ الإصابة",
@@ -246,13 +225,11 @@
   "medical_status_field": "الوضع الحالي",
   "medical_add_surgery": "إضافة عملية",
   "medical_surgery_n": "عملية {n}",
-
   "medical_current_pain": "ألم حالي",
   "medical_chronic_injury": "إصابة مزمنة",
   "medical_medications": "تناول أدوية",
   "medical_allergies": "حساسية معروفة",
   "medical_supportive_eq": "استخدام معدات دعم (دعامة/شريط)",
-
   "mg_quadriceps": "عضله الاماميه",
   "mg_quadriceps_origin": "منشأ الاماميه",
   "mg_hamstring": "عضله الخلفيه",
@@ -260,7 +237,6 @@
   "mg_calf": "عضله السمانه",
   "mg_lower_back": "اسفل الظهر",
   "mg_lower_abdominal": "عضله البطن السفلي",
-
   "jt_acl": "الرباط الصليبي الأمامي",
   "jt_pcl": "الرباط الصليبي الخلفي",
   "jt_mcl": "الرباط الجانبي الداخلي",
@@ -269,15 +245,12 @@
   "jt_ankle_sprain": "التواء الكاحل",
   "jt_shoulder": "خلع الكتف",
   "jt_other": "أخرى",
-
   "side_right": "يمين",
   "side_left": "يسار",
   "side_both": "كلاهما",
-
   "grade_1": "الدرجة الأولى",
   "grade_2": "الدرجة الثانية",
   "grade_3": "الدرجة الثالثة",
-
   "status_fully_recovered": "تعافٍ كامل",
   "status_ongoing_rehab": "إعادة تأهيل مستمرة",
   "status_limited": "نشاط محدود",
