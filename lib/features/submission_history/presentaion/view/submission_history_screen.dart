@@ -1,13 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../features/post_training/data/models/post_training_model.dart';
 import '../../../../features/pre_training/data/models/pre_training_model.dart';
 import '../logic/submission_history_cubit.dart';
 import '../logic/submission_history_state.dart';
+
+final _fakePreSessions = List<PreTrainingModel>.generate(
+  4,
+  (_) => PreTrainingModel(
+    uid: 'x',
+    sleepQuality: 4,
+    hoursOfSleep: 7.0,
+    fatigueLevel: 3,
+    muscleSoreness: 3,
+    mood: 4,
+    stressLevel: 3,
+    energyLevel: 7,
+    hasPainOrInjury: false,
+    readinessToTrain: 7,
+    createdAt: DateTime(2024, 6, 15),
+  ),
+);
+
+final _fakePostSessions = List<PostTrainingModel>.generate(
+  4,
+  (_) => PostTrainingModel(
+    uid: 'x',
+    rpe: 6,
+    completedWorkout: true,
+    feltPain: false,
+    injury: false,
+    fatigue: 4,
+    trainingDuration: 60.0,
+    createdAt: DateTime(2024, 6, 15),
+  ),
+);
 
 class SubmissionHistoryScreen extends StatelessWidget {
   final String uid;
@@ -65,14 +98,21 @@ class _HistoryView extends StatelessWidget {
                 ],
               ),
             ),
-            body: state.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : TabBarView(
-                    children: [
-                      _PreList(sessions: state.preSessions, fmt: _fmt),
-                      _PostList(sessions: state.postSessions, fmt: _fmt),
-                    ],
-                  ),
+            body: Skeletonizer(
+                enabled: state.isLoading,
+                child: TabBarView(
+                  children: [
+                    _PreList(
+                      sessions: state.isLoading ? _fakePreSessions : state.preSessions,
+                      fmt: _fmt,
+                    ),
+                    _PostList(
+                      sessions: state.isLoading ? _fakePostSessions : state.postSessions,
+                      fmt: _fmt,
+                    ),
+                  ],
+                ),
+              ),
           ),
         );
       },
@@ -90,7 +130,7 @@ class _PreList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (sessions.isEmpty) return _emptyState();
+    if (sessions.isEmpty) return AppEmptyState(message: AppStrings.noHistory);
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
       itemCount: sessions.length,
@@ -251,7 +291,7 @@ class _PostList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (sessions.isEmpty) return _emptyState();
+    if (sessions.isEmpty) return AppEmptyState(message: AppStrings.noHistory);
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
       itemCount: sessions.length,
@@ -463,22 +503,6 @@ class _RowData {
     this.valueColor,
     this.bold = false,
   });
-}
-
-Widget _emptyState() {
-  return Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.inbox_rounded, size: 52, color: AppColors.textHint),
-        const SizedBox(height: 10),
-        Text(
-          AppStrings.noHistory,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-        ),
-      ],
-    ),
-  );
 }
 
 Color _scale(int value, int max, {required bool higher}) {

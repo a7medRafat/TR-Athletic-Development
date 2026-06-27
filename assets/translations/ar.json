@@ -195,5 +195,24 @@
   "gender_required": "يرجى اختيار الجنس",
   "male": "ذكر",
   "female": "أنثى",
-  "other_gender": "آخر"
+  "other_gender": "آخر",
+
+  "workload_monitoring": "الحمل التدريبي",
+  "acute_load": "الحمل الحاد (7 أيام)",
+  "chronic_load": "الحمل المزمن (28 يوم)",
+  "acwr": "نسبة الحمل",
+  "workload_status": "الحالة",
+  "daily_load_chart": "الحمل التدريبي اليومي",
+  "acute_vs_chronic": "الحمل الحاد مقابل المزمن",
+  "acwr_history": "سجل نسبة الحمل",
+  "workload_summary": "ملخص الحمل التدريبي",
+  "peak_acute": "أعلى حمل حاد",
+  "peak_chronic": "أعلى حمل مزمن",
+  "peak_acwr": "أعلى نسبة",
+  "avg_daily_load": "متوسط الحمل اليومي",
+  "no_workload_data": "لا توجد بيانات حمل تدريبي",
+  "no_workload_subtitle": "تحتاج جلسات ما بعد التدريب مع المدة الزمنية لحساب الحمل.",
+  "safe_zone": "النطاق الآمن",
+  "last_28_days": "آخر 28 يوماً",
+  "arbitrary_units": "وحدة"
 }

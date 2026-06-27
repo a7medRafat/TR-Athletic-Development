@@ -14,6 +14,7 @@ class AppConfirmDialog extends StatelessWidget {
   final IconData icon;
   final Color? iconColor;
   final Widget? extraContent;
+  final bool showActions;
 
   const AppConfirmDialog({
     super.key,
@@ -26,6 +27,7 @@ class AppConfirmDialog extends StatelessWidget {
     this.icon = Icons.warning_amber_rounded,
     this.iconColor,
     this.extraContent,
+    this.showActions = true,
   });
 
   static Future<void> show(
@@ -39,6 +41,7 @@ class AppConfirmDialog extends StatelessWidget {
     IconData icon = Icons.warning_amber_rounded,
     Color? iconColor,
     Widget? extraContent,
+    bool showActions = true,
   }) {
     return showDialog<void>(
       context: context,
@@ -53,6 +56,7 @@ class AppConfirmDialog extends StatelessWidget {
         icon: icon,
         iconColor: iconColor,
         extraContent: extraContent,
+        showActions: showActions,
       ),
     );
   }
@@ -102,31 +106,34 @@ class AppConfirmDialog extends StatelessWidget {
               SizedBox(height: 14.h),
               extraContent!,
             ],
-            SizedBox(height: 24.h),
-            Row(
-              children: [
-                Expanded(
-                  child: _DialogButton(
-                    label: confirmLabel ?? AppStrings.confirmAction,
-                    color: confirmColor,
-                    textColor: Colors.white,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      onConfirm();
-                    },
+            if (showActions) ...[
+              SizedBox(height: 24.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: _DialogButton(
+                      label: confirmLabel ?? AppStrings.confirmAction,
+                      color: confirmColor,
+                      textColor: Colors.white,
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        onConfirm();
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: _DialogButton(
-                    label: cancelLabel ?? AppStrings.cancel,
-                    color: AppColors.background,
-                    textColor: AppColors.textPrimary,
-                    onTap: () => Navigator.of(context).pop(),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: _DialogButton(
+                      label: cancelLabel ?? AppStrings.cancel,
+                      color: AppColors.background,
+                      textColor: AppColors.textPrimary,
+                      onTap: () => Navigator.of(context).pop(),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ] else
+              SizedBox(height: 8.h),
           ],
         ),
       ),

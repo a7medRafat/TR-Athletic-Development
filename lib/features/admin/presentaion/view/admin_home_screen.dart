@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
@@ -11,9 +12,19 @@ import '../../../../core/utils/readiness_calculator.dart';
 import '../logic/admin_users_cubit.dart';
 import '../logic/admin_users_state.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../data/models/admin_user_model.dart';
 import '../widgets/user_list_tile_widget.dart';
 import '../widgets/user_request_card_widget.dart';
 import 'admin_user_detail_screen.dart';
+
+final _kDummyUser = AdminUserModel(
+  uid: 'x',
+  email: 'athlete@tr.com',
+  fullName: 'Athlete Name',
+  phoneNumber: '+1 234 567 890',
+  status: 'approved',
+  createdAt: DateTime(2024, 1, 1),
+);
 
 class AdminHomeScreen extends StatelessWidget {
   const AdminHomeScreen({super.key});
@@ -373,7 +384,7 @@ class _AdminDrawer extends StatelessWidget {
               title: Text(
                 AppStrings.requests,
                 style: TextStyle(
-                  fontSize: 15.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
@@ -421,7 +432,7 @@ class _AdminDrawer extends StatelessWidget {
               title: Text(
                 AppStrings.language,
                 style: TextStyle(
-                  fontSize: 15.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
@@ -453,7 +464,7 @@ class _AdminDrawer extends StatelessWidget {
               title: Text(
                 AppStrings.logout,
                 style: TextStyle(
-                  fontSize: 15.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.error,
                 ),
@@ -481,33 +492,37 @@ class _AdminDrawer extends StatelessWidget {
 }
 
 void _showLangPicker(BuildContext context) {
-  showDialog<void>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      title: Text(AppStrings.changeLanguage),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _LangOption(
-            label: AppStrings.english,
-            selected: context.locale.languageCode == 'en',
-            onTap: () {
-              context.setLocale(const Locale('en'));
-              Navigator.of(ctx).pop();
-            },
-          ),
-          SizedBox(height: 8.h),
-          _LangOption(
-            label: AppStrings.arabic,
-            selected: context.locale.languageCode == 'ar',
-            onTap: () {
-              context.setLocale(const Locale('ar'));
-              Navigator.of(ctx).pop();
-            },
-          ),
-        ],
-      ),
+  AppConfirmDialog.show(
+    context,
+    title: AppStrings.changeLanguage,
+    message: context.locale.languageCode == 'ar'
+        ? AppStrings.arabic
+        : AppStrings.english,
+    icon: Icons.language_rounded,
+    iconColor: AppColors.primary,
+    confirmColor: AppColors.primary,
+    onConfirm: () {},
+    showActions: false,
+    extraContent: Column(
+      children: [
+        _LangOption(
+          label: AppStrings.english,
+          selected: context.locale.languageCode == 'en',
+          onTap: () {
+            context.setLocale(const Locale('en'));
+            Navigator.of(context).pop();
+          },
+        ),
+        SizedBox(height: 8.h),
+        _LangOption(
+          label: AppStrings.arabic,
+          selected: context.locale.languageCode == 'ar',
+          onTap: () {
+            context.setLocale(const Locale('ar'));
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     ),
   );
 }
@@ -590,9 +605,9 @@ class _RequestsScreen extends StatelessWidget {
               '${pending.isNotEmpty ? ' (${pending.length})' : ''}',
             ),
           ),
-          body: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : pending.isEmpty
+          body: Skeletonizer(
+              enabled: state.isLoading,
+              child: pending.isEmpty && !state.isLoading
                   ? Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -611,22 +626,25 @@ class _RequestsScreen extends StatelessWidget {
                     )
                   : ListView.builder(
                       padding: EdgeInsets.symmetric(vertical: 12.h),
-                      itemCount: pending.length,
+                      itemCount: state.isLoading ? 5 : pending.length,
                       itemBuilder: (_, i) {
-                        final user = pending[i];
+                        final user = state.isLoading ? _kDummyUser : pending[i];
                         return UserRequestCardWidget(
                           user: user,
-                          onTap: () => onTap(user.uid),
-                          onApprove: () => onApprove(
-                            user.uid,
-                            user.fullName.isNotEmpty
-                                ? user.fullName
-                                : user.email,
-                          ),
-                          onReject: () => onReject(user.uid),
+                          onTap: state.isLoading ? () {} : () => onTap(user.uid),
+                          onApprove: state.isLoading
+                              ? () {}
+                              : () => onApprove(
+                                    user.uid,
+                                    user.fullName.isNotEmpty
+                                        ? user.fullName
+                                        : user.email,
+                                  ),
+                          onReject: state.isLoading ? () {} : () => onReject(user.uid),
                         );
                       },
                     ),
+            ),
         );
       },
     );
@@ -725,29 +743,30 @@ class _UsersTab extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : state.filtered.isEmpty
-                  ? Center(
-                      child: Text(
-                        AppStrings.noUsers,
-                        style: TextStyle(
-                            fontSize: 15.sp,
-                            color: AppColors.textSecondary),
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: EdgeInsets.symmetric(vertical: 8.h),
-                      itemCount: state.filtered.length,
-                      itemBuilder: (_, i) {
-                        final user = state.filtered[i];
-                        return UserListTileWidget(
-                          user: user,
-                          onTap: () => onTap(user.uid),
-                          onToggleStatus: () => onToggle(user),
-                        );
-                      },
-                    ),
+          child: state.filtered.isEmpty && !state.isLoading
+              ? Center(
+                  child: Text(
+                    AppStrings.noUsers,
+                    style: TextStyle(
+                        fontSize: 15.sp,
+                        color: AppColors.textSecondary),
+                  ),
+                )
+              : Skeletonizer(
+                  enabled: state.isLoading,
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    itemCount: state.isLoading ? 7 : state.filtered.length,
+                    itemBuilder: (_, i) {
+                      final user = state.isLoading ? _kDummyUser : state.filtered[i];
+                      return UserListTileWidget(
+                        user: user,
+                        onTap: state.isLoading ? () {} : () => onTap(user.uid),
+                        onToggleStatus: state.isLoading ? () {} : () => onToggle(user),
+                      );
+                    },
+                  ),
+                ),
         ),
       ],
     );
@@ -769,68 +788,90 @@ class _StatsTab extends StatelessWidget {
     final rejected = users.where((u) => u.isRejected).length;
     final disabled = users.where((u) => u.isDisabled).length;
 
-    final withScore = users
-        .where((u) => u.lastReadinessScore != null)
-        .toList();
+    // Readiness
+    final withScore = users.where((u) => u.lastReadinessScore != null).toList();
     final readyCount = withScore
         .where((u) => ReadinessCalculator.isReady(u.lastReadinessScore!))
         .length;
     final notReadyCount = withScore.length - readyCount;
     final noDataCount = users.length - withScore.length;
-
     final avgScore = withScore.isEmpty
         ? 0.0
-        : withScore
-                .map((u) => u.lastReadinessScore!)
-                .reduce((a, b) => a + b) /
+        : withScore.map((u) => u.lastReadinessScore!).reduce((a, b) => a + b) /
             withScore.length;
+
+    // Demographics
+    final withAge = users.where((u) => u.age != null).toList();
+    final avgAge = withAge.isEmpty
+        ? 0.0
+        : withAge.map((u) => u.age!).reduce((a, b) => a + b) / withAge.length;
+    final males = users.where((u) => u.gender == 'male').length;
+    final females = users.where((u) => u.gender == 'female').length;
+    final otherGender = users
+        .where((u) =>
+            u.gender != null && u.gender != 'male' && u.gender != 'female')
+        .length;
+
+    // Profile completeness
+    final withProfile = users
+        .where((u) =>
+            u.age != null &&
+            u.weight != null &&
+            u.height != null &&
+            u.gender != null)
+        .length;
+    final profileRate = users.isEmpty
+        ? 0
+        : ((withProfile / users.length) * 100).round();
+
+    // New registrations in the last 7 days
+    final now = DateTime.now();
+    final newThisWeek =
+        users.where((u) => now.difference(u.createdAt).inDays <= 7).length;
 
     return ListView(
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
       children: [
-        // User status breakdown
         _SectionTitle(title: AppStrings.userOverview, icon: Icons.people_rounded),
         SizedBox(height: 10.h),
-        Row(
-          children: [
-            _StatCard(
-              label: AppStrings.total,
-              value: '${users.length}',
-              icon: Icons.group_rounded,
-              color: AppColors.primary,
-            ),
-            SizedBox(width: 10.w),
-            _StatCard(
-              label: AppStrings.active,
-              value: '$approved',
-              icon: Icons.check_circle_rounded,
-              color: AppColors.success,
-            ),
-          ],
+
+        // ── Roster card ───────────────────────────────────────────────
+        _RosterCard(
+          total: users.length,
+          approved: approved,
+          pending: pending,
+          rejected: rejected,
+          disabled: disabled,
+          newThisWeek: newThisWeek,
         ),
         SizedBox(height: 10.h),
-        Row(
-          children: [
-            _StatCard(
-              label: AppStrings.statusPending,
-              value: '$pending',
-              icon: Icons.hourglass_top_rounded,
-              color: AppColors.warning,
-            ),
-            SizedBox(width: 10.w),
-            _StatCard(
-              label: AppStrings.rejectedDisabled,
-              value: '${rejected + disabled}',
-              icon: Icons.block_rounded,
-              color: AppColors.error,
-            ),
-          ],
+
+        // ── Demographics card ─────────────────────────────────────────
+        _DemographicsCard(
+          avgAge: avgAge,
+          hasAgeData: withAge.isNotEmpty,
+          males: males,
+          females: females,
+          otherGender: otherGender,
+          total: users.length,
+          profileRate: profileRate,
         ),
+        SizedBox(height: 10.h),
+
+        // ── Attention card ────────────────────────────────────────────
+        if (pending > 0 || noDataCount > 0 || (users.length - withProfile) > 0)
+          _AttentionCard(
+            pendingCount: pending,
+            noReadinessCount: noDataCount,
+            incompleteProfileCount: users.length - withProfile,
+          ),
+
         SizedBox(height: 24.h),
 
-        // Readiness overview
+        // ── Readiness overview ────────────────────────────────────────
         _SectionTitle(
-            title: AppStrings.readinessOverview, icon: Icons.directions_run_rounded),
+            title: AppStrings.readinessOverview,
+            icon: Icons.directions_run_rounded),
         SizedBox(height: 10.h),
         _ReadinessCard(
           readyCount: readyCount,
@@ -841,10 +882,11 @@ class _StatsTab extends StatelessWidget {
         ),
         SizedBox(height: 24.h),
 
-        // Breakdown bars
+        // ── Score distribution ────────────────────────────────────────
         if (withScore.isNotEmpty) ...[
           _SectionTitle(
-              title: AppStrings.scoreDistribution, icon: Icons.bar_chart_rounded),
+              title: AppStrings.scoreDistribution,
+              icon: Icons.bar_chart_rounded),
           SizedBox(height: 10.h),
           _ScoreDistribution(users: withScore),
         ],
@@ -852,6 +894,557 @@ class _StatsTab extends StatelessWidget {
     );
   }
 }
+
+// ── Roster Card ───────────────────────────────────────────────────────────────
+
+class _RosterCard extends StatelessWidget {
+  final int total;
+  final int approved;
+  final int pending;
+  final int rejected;
+  final int disabled;
+  final int newThisWeek;
+
+  const _RosterCard({
+    required this.total,
+    required this.approved,
+    required this.pending,
+    required this.rejected,
+    required this.disabled,
+    required this.newThisWeek,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final inactive = rejected + disabled;
+    final activeRate =
+        total == 0 ? 0 : ((approved / total) * 100).round();
+
+    return Container(
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+              color: AppColors.cardShadow,
+              blurRadius: 6,
+              offset: const Offset(0, 1)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top row: total + new badge
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '$total',
+                style: TextStyle(
+                  fontSize: 36.sp,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                  height: 1,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Padding(
+                padding: EdgeInsets.only(bottom: 4.h),
+                child: Text(
+                  'Total Athletes',
+                  style: TextStyle(
+                      fontSize: 12.sp, color: AppColors.textSecondary),
+                ),
+              ),
+              const Spacer(),
+              if (newThisWeek > 0)
+                Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add_rounded,
+                          size: 11.sp, color: AppColors.primary),
+                      SizedBox(width: 2.w),
+                      Text(
+                        '$newThisWeek new this week',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          SizedBox(height: 14.h),
+
+          // Stacked status bar
+          if (total > 0) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6.r),
+              child: SizedBox(
+                height: 10.h,
+                child: Row(
+                  children: [
+                    if (approved > 0)
+                      Flexible(
+                        flex: approved,
+                        child: Container(color: AppColors.success),
+                      ),
+                    if (pending > 0)
+                      Flexible(
+                        flex: pending,
+                        child: Container(color: AppColors.warning),
+                      ),
+                    if (inactive > 0)
+                      Flexible(
+                        flex: inactive,
+                        child: Container(color: AppColors.error),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 12.h),
+          ],
+
+          // 4-stat row
+          Row(
+            children: [
+              _RosterStat(
+                  label: 'Active',
+                  value: '$approved',
+                  pct: '$activeRate%',
+                  color: AppColors.success),
+              _RosterDivider(),
+              _RosterStat(
+                  label: 'Pending',
+                  value: '$pending',
+                  pct: total > 0
+                      ? '${((pending / total) * 100).round()}%'
+                      : '0%',
+                  color: AppColors.warning),
+              _RosterDivider(),
+              _RosterStat(
+                  label: 'Rejected',
+                  value: '$rejected',
+                  pct: total > 0
+                      ? '${((rejected / total) * 100).round()}%'
+                      : '0%',
+                  color: AppColors.error),
+              _RosterDivider(),
+              _RosterStat(
+                  label: 'Disabled',
+                  value: '$disabled',
+                  pct: total > 0
+                      ? '${((disabled / total) * 100).round()}%'
+                      : '0%',
+                  color: AppColors.textSecondary),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RosterStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final String pct;
+  final Color color;
+
+  const _RosterStat({
+    required this.label,
+    required this.value,
+    required this.pct,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
+          Text(
+            pct,
+            style: TextStyle(
+              fontSize: 9.sp,
+              fontWeight: FontWeight.w600,
+              color: color.withValues(alpha: 0.7),
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(fontSize: 9.sp, color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RosterDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 36.h, color: AppColors.border);
+}
+
+// ── Demographics Card ─────────────────────────────────────────────────────────
+
+class _DemographicsCard extends StatelessWidget {
+  final double avgAge;
+  final bool hasAgeData;
+  final int males;
+  final int females;
+  final int otherGender;
+  final int total;
+  final int profileRate;
+
+  const _DemographicsCard({
+    required this.avgAge,
+    required this.hasAgeData,
+    required this.males,
+    required this.females,
+    required this.otherGender,
+    required this.total,
+    required this.profileRate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final genderTotal = males + females + otherGender;
+
+    return Container(
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+              color: AppColors.cardShadow,
+              blurRadius: 6,
+              offset: const Offset(0, 1)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Athlete Profile',
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Row(
+            children: [
+              // Avg age
+              Expanded(
+                child: _DemoStat(
+                  icon: Icons.cake_rounded,
+                  color: AppColors.accent,
+                  label: 'Avg Age',
+                  value: hasAgeData
+                      ? '${avgAge.toStringAsFixed(0)} yrs'
+                      : '—',
+                ),
+              ),
+              SizedBox(width: 10.w),
+              // Profile completion
+              Expanded(
+                child: _DemoStat(
+                  icon: Icons.person_rounded,
+                  color: profileRate >= 80
+                      ? AppColors.success
+                      : profileRate >= 50
+                          ? AppColors.warning
+                          : AppColors.error,
+                  label: 'Profile Complete',
+                  value: '$profileRate%',
+                ),
+              ),
+            ],
+          ),
+          if (genderTotal > 0) ...[
+            SizedBox(height: 12.h),
+            Text(
+              'Gender',
+              style: TextStyle(
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary),
+            ),
+            SizedBox(height: 8.h),
+            // Gender bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4.r),
+              child: SizedBox(
+                height: 8.h,
+                child: Row(
+                  children: [
+                    if (males > 0)
+                      Flexible(
+                          flex: males,
+                          child: Container(color: AppColors.primary)),
+                    if (females > 0)
+                      Flexible(
+                          flex: females,
+                          child: Container(
+                              color: const Color(0xFFEC4899))),
+                    if (otherGender > 0)
+                      Flexible(
+                          flex: otherGender,
+                          child: Container(color: AppColors.textHint)),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Row(
+              children: [
+                if (males > 0)
+                  _GenderChip(
+                      label: 'Male',
+                      count: males,
+                      color: AppColors.primary),
+                if (males > 0 && (females > 0 || otherGender > 0))
+                  SizedBox(width: 8.w),
+                if (females > 0)
+                  _GenderChip(
+                      label: 'Female',
+                      count: females,
+                      color: const Color(0xFFEC4899)),
+                if (females > 0 && otherGender > 0) SizedBox(width: 8.w),
+                if (otherGender > 0)
+                  _GenderChip(
+                      label: 'Other',
+                      count: otherGender,
+                      color: AppColors.textHint),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _DemoStat extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+
+  const _DemoStat({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 18.sp),
+          SizedBox(width: 8.w),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                    fontSize: 9.sp, color: AppColors.textSecondary),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GenderChip extends StatelessWidget {
+  final String label;
+  final int count;
+  final Color color;
+
+  const _GenderChip(
+      {required this.label, required this.count, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8.r,
+          height: 8.r,
+          decoration:
+              BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        SizedBox(width: 4.w),
+        Text(
+          '$label ($count)',
+          style: TextStyle(fontSize: 10.sp, color: AppColors.textSecondary),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Attention Card ────────────────────────────────────────────────────────────
+
+class _AttentionCard extends StatelessWidget {
+  final int pendingCount;
+  final int noReadinessCount;
+  final int incompleteProfileCount;
+
+  const _AttentionCard({
+    required this.pendingCount,
+    required this.noReadinessCount,
+    required this.incompleteProfileCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(14.r),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14.r),
+        border:
+            Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
+        boxShadow: [
+          BoxShadow(
+              color: AppColors.cardShadow,
+              blurRadius: 6,
+              offset: const Offset(0, 1)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.notifications_active_rounded,
+                  size: 14.sp, color: AppColors.warning),
+              SizedBox(width: 6.w),
+              Text(
+                'Requires Attention',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.h),
+          if (pendingCount > 0)
+            _AttentionRow(
+              icon: Icons.how_to_reg_rounded,
+              color: AppColors.warning,
+              label: '$pendingCount athlete${pendingCount > 1 ? 's' : ''} awaiting approval',
+            ),
+          if (noReadinessCount > 0)
+            _AttentionRow(
+              icon: Icons.monitor_heart_outlined,
+              color: AppColors.primary,
+              label:
+                  '$noReadinessCount athlete${noReadinessCount > 1 ? 's' : ''} with no readiness data',
+            ),
+          if (incompleteProfileCount > 0)
+            _AttentionRow(
+              icon: Icons.person_off_rounded,
+              color: AppColors.textSecondary,
+              label:
+                  '$incompleteProfileCount athlete${incompleteProfileCount > 1 ? 's' : ''} with incomplete profile',
+              isLast: true,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AttentionRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final bool isLast;
+
+  const _AttentionRow({
+    required this.icon,
+    required this.color,
+    required this.label,
+    this.isLast = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 8.h),
+      child: Row(
+        children: [
+          Container(
+            width: 28.r,
+            height: 28.r,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Icon(icon, size: 14.sp, color: color),
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                  fontSize: 12.sp, color: AppColors.textPrimary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Section title ─────────────────────────────────────────────────────────────
 
 class _SectionTitle extends StatelessWidget {
   final String title;
@@ -874,73 +1467,6 @@ class _SectionTitle extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  const _StatCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.all(16.r),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14.r),
-          boxShadow: [
-            BoxShadow(
-                color: AppColors.cardShadow,
-                blurRadius: 6,
-                offset: const Offset(0, 1)),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40.r,
-              height: 40.r,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Icon(icon, color: color, size: 20.sp),
-            ),
-            SizedBox(width: 12.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

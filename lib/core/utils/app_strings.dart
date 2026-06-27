@@ -219,6 +219,26 @@ class AppStrings {
   static String get female => 'female'.tr();
   static String get otherGender => 'other_gender'.tr();
 
+  // Workload Monitoring
+  static String get workloadMonitoring => 'workload_monitoring'.tr();
+  static String get acuteLoad => 'acute_load'.tr();
+  static String get chronicLoad => 'chronic_load'.tr();
+  static String get acwr => 'acwr'.tr();
+  static String get workloadStatus => 'workload_status'.tr();
+  static String get dailyLoadChart => 'daily_load_chart'.tr();
+  static String get acuteVsChronic => 'acute_vs_chronic'.tr();
+  static String get acwrHistory => 'acwr_history'.tr();
+  static String get workloadSummary => 'workload_summary'.tr();
+  static String get peakAcute => 'peak_acute'.tr();
+  static String get peakChronic => 'peak_chronic'.tr();
+  static String get peakAcwr => 'peak_acwr'.tr();
+  static String get avgDailyLoad => 'avg_daily_load'.tr();
+  static String get noWorkloadData => 'no_workload_data'.tr();
+  static String get noWorkloadSubtitle => 'no_workload_subtitle'.tr();
+  static String get safeZone => 'safe_zone'.tr();
+  static String get last28Days => 'last_28_days'.tr();
+  static String get arbitraryUnits => 'arbitrary_units'.tr();
+
   // Stats with params
   static String thresholdLabel(int value) =>
       'threshold_label'.tr(namedArgs: {'value': '$value'});
