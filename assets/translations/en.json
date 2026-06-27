@@ -105,6 +105,7 @@
   "avg_rpe": "Avg RPE",
   "last_activity": "Last Activity",
   "no_history": "No submissions yet",
+  "submitted_today": "Submitted today ✓",
   "approve_confirm": "Approve this user?",
   "reject_confirm": "Reject this user?",
   "disable_confirm": "Disable this user?",

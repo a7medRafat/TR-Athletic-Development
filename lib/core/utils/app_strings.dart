@@ -121,6 +121,7 @@ class AppStrings {
   static String get avgRpe => 'avg_rpe'.tr();
   static String get lastActivity => 'last_activity'.tr();
   static String get noHistory => 'no_history'.tr();
+  static String get submittedToday => 'submitted_today'.tr();
   static String get approveConfirm => 'approve_confirm'.tr();
   static String get rejectConfirm => 'reject_confirm'.tr();
   static String get disableConfirm => 'disable_confirm'.tr();

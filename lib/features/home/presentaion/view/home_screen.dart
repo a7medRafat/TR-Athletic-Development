@@ -14,14 +14,19 @@ import '../../../settings/presentaion/logic/settings_state.dart';
 import '../../../settings/presentaion/view/update_profile_screen.dart';
 import '../../../submission_history/presentaion/logic/submission_history_cubit.dart';
 import '../../../submission_history/presentaion/view/submission_history_screen.dart';
+import '../logic/home_cubit.dart';
+import '../logic/home_state.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<SettingsCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<SettingsCubit>()),
+        BlocProvider(create: (_) => getIt<HomeCubit>()),
+      ],
       child: const _HomeView(),
     );
   }
@@ -78,7 +83,9 @@ class _HomeView extends StatelessWidget {
         final initials = _initials(displayName, email);
         final cubit = context.read<SettingsCubit>();
 
-        return Scaffold(
+        final homeCubit = context.read<HomeCubit>();
+        return BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, homeState) => Scaffold(
           backgroundColor: AppColors.background,
           drawer: _AppDrawer(
             displayName: displayName,
@@ -169,12 +176,18 @@ class _HomeView extends StatelessWidget {
                   subtitle: AppStrings.preTrainingSubtitle,
                   color: AppColors.primary,
                   lightColor: AppColors.primaryLight,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PreTrainingScreen(),
-                    ),
-                  ),
+                  isCompleted: homeState.hasPreToday,
+                  onTap: homeState.hasPreToday
+                      ? null
+                      : () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const PreTrainingScreen(),
+                            ),
+                          );
+                          if (context.mounted) homeCubit.checkToday();
+                        },
                 ),
                 SizedBox(height: 16.h),
                 _TrainingCard(
@@ -183,17 +196,23 @@ class _HomeView extends StatelessWidget {
                   subtitle: AppStrings.postTrainingSubtitle,
                   color: AppColors.accent,
                   lightColor: AppColors.accent.withValues(alpha: 0.12),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PostTrainingScreen(),
-                    ),
-                  ),
+                  isCompleted: homeState.hasPostToday,
+                  onTap: homeState.hasPostToday
+                      ? null
+                      : () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const PostTrainingScreen(),
+                            ),
+                          );
+                          if (context.mounted) homeCubit.checkToday();
+                        },
                 ),
               ],
             ),
           ),
-        );
+        ));
       },
     );
   }
@@ -205,7 +224,8 @@ class _TrainingCard extends StatelessWidget {
   final String subtitle;
   final Color color;
   final Color lightColor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final bool isCompleted;
 
   const _TrainingCard({
     required this.icon,
@@ -213,68 +233,92 @@ class _TrainingCard extends StatelessWidget {
     required this.subtitle,
     required this.color,
     required this.lightColor,
-    required this.onTap,
+    required this.isCompleted,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final disabled = isCompleted || onTap == null;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(20.r),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.cardShadow,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 56.r,
-              height: 56.r,
-              decoration: BoxDecoration(
-                color: lightColor,
-                borderRadius: BorderRadius.circular(14.r),
-              ),
-              child: Icon(icon, color: color, size: 28.sp),
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+      child: AnimatedOpacity(
+        opacity: disabled ? 0.55 : 1.0,
+        duration: const Duration(milliseconds: 200),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(20.r),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16.r),
+            boxShadow: disabled
+                ? []
+                : [
+                    BoxShadow(
+                      color: AppColors.cardShadow,
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+                  ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 56.r,
+                height: 56.r,
+                decoration: BoxDecoration(
+                  color: disabled
+                      ? AppColors.border
+                      : lightColor,
+                  borderRadius: BorderRadius.circular(14.r),
+                ),
+                child: Icon(
+                  isCompleted ? Icons.check_circle_rounded : icon,
+                  color: isCompleted ? AppColors.success : (disabled ? AppColors.textHint : color),
+                  size: 28.sp,
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.textSecondary,
-              size: 24.sp,
-            ),
-          ],
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: disabled
+                            ? AppColors.textSecondary
+                            : AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      isCompleted
+                          ? AppStrings.submittedToday
+                          : subtitle,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: isCompleted
+                            ? AppColors.success
+                            : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                isCompleted
+                    ? Icons.lock_rounded
+                    : Icons.chevron_right_rounded,
+                color: isCompleted
+                    ? AppColors.success
+                    : AppColors.textSecondary,
+                size: 22.sp,
+              ),
+            ],
+          ),
         ),
       ),
     );

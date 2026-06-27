@@ -15,6 +15,7 @@ import 'features/auth/presentaion/view/pending_approval_screen.dart';
 import 'features/auth/presentaion/view/rejected_screen.dart';
 import 'features/home/presentaion/view/home_screen.dart';
 import 'features/login/presentaion/view/login_screen.dart';
+import 'features/splash/splash_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -60,7 +61,7 @@ class App extends StatelessWidget {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        home: const AuthGate(),
+        home: const SplashScreen(),
       ),
     );
   }

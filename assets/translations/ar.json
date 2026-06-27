@@ -105,6 +105,7 @@
   "avg_rpe": "متوسط RPE",
   "last_activity": "آخر نشاط",
   "no_history": "لا توجد إرسالات بعد",
+  "submitted_today": "تم الإرسال اليوم ✓",
   "approve_confirm": "الموافقة على هذا المستخدم؟",
   "reject_confirm": "رفض هذا المستخدم؟",
   "disable_confirm": "تعطيل هذا المستخدم؟",

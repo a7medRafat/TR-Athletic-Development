@@ -21,6 +21,7 @@ import '../../features/settings/data/datasources/settings_firebase_service.dart'
 import '../../features/settings/data/datasources/update_profile_firebase_service.dart';
 import '../../features/settings/data/repositories/settings_repo.dart';
 import '../../features/settings/data/repositories/update_profile_repo.dart';
+import '../../features/home/presentaion/logic/home_cubit.dart';
 import '../../features/settings/presentaion/logic/settings_cubit.dart';
 import '../../features/settings/presentaion/logic/update_profile_cubit.dart';
 import '../../features/submission_history/presentaion/logic/submission_history_cubit.dart';
@@ -86,6 +87,11 @@ Future<void> setupGetIt() async {
   );
   getIt.registerFactory<UpdateProfileCubit>(
     () => UpdateProfileCubit(getIt<UpdateProfileRepo>()),
+  );
+
+  // Home
+  getIt.registerFactory<HomeCubit>(
+    () => HomeCubit(getIt<PreTrainingRepo>(), getIt<PostTrainingRepo>()),
   );
 
   // Submission History

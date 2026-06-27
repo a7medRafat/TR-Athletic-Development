@@ -11,18 +11,10 @@ class LoginHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 80.w,
-          height: 80.w,
-          decoration: BoxDecoration(
-            color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Icon(
-            Icons.fitness_center_rounded,
-            size: 40.sp,
-            color: AppColors.primary,
-          ),
+        Image.asset(
+          'assets/images/app-logo.png',
+          width: 100.w,
+          height: 100.w,
         ),
         SizedBox(height: 16.h),
         Text(

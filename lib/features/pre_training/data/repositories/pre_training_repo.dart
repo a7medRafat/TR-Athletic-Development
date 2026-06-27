@@ -17,6 +17,15 @@ class PreTrainingRepo {
     }
   }
 
+  Future<ApiResult<bool>> hasSubmittedToday(String uid) async {
+    try {
+      final result = await _service.hasSubmittedToday(uid);
+      return ApiResult.success(result);
+    } catch (error) {
+      return ApiResult.failure(ApiErrorHandler.handle(error));
+    }
+  }
+
   Future<ApiResult<List<PreTrainingModel>>> fetchByUid(String uid) async {
     try {
       final list = await _service.fetchByUid(uid);

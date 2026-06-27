@@ -14,6 +14,20 @@ class PostTrainingFirebaseService {
     return docRef.id;
   }
 
+  Future<bool> hasSubmittedToday(String uid) async {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
+    final snapshot = await _firestore
+        .collection(_collection)
+        .where('uid', isEqualTo: uid)
+        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
   Future<List<PostTrainingModel>> fetchByUid(String uid) async {
     final snapshot = await _firestore
         .collection(_collection)
