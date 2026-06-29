@@ -124,6 +124,17 @@ class AdminFirebaseService {
         .toList();
   }
 
+  Future<void> updatePostTrainingSession(PostTrainingModel session) async {
+    await _firestore
+        .collection('post_training')
+        .doc(session.id)
+        .update(session.toMap());
+  }
+
+  Future<void> deletePostTrainingSession(String docId) async {
+    await _firestore.collection('post_training').doc(docId).delete();
+  }
+
   /// Deletes a user's Firestore footprint entirely: every pre_training and
   /// post_training doc plus the users/{uid} doc itself. Does NOT remove
   /// their Firebase Auth account — the client SDK can only delete the

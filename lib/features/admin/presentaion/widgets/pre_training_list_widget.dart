@@ -67,7 +67,7 @@ class PreCardWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (onEdit != null)
-                  _CardActionButton(
+                  CardActionButton(
                     icon: Icons.edit_outlined,
                     color: AppColors.primary,
                     tooltip: AppStrings.editSession,
@@ -75,7 +75,7 @@ class PreCardWidget extends StatelessWidget {
                   ),
                 if (onEdit != null && onDelete != null) SizedBox(width: 4.w),
                 if (onDelete != null)
-                  _CardActionButton(
+                  CardActionButton(
                     icon: Icons.delete_outline_rounded,
                     color: AppColors.error,
                     tooltip: AppStrings.deleteSession,
@@ -138,38 +138,6 @@ class PreCardWidget extends StatelessWidget {
   }
 }
 
-class _CardActionButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String tooltip;
-  final VoidCallback onTap;
-
-  const _CardActionButton({
-    required this.icon,
-    required this.color,
-    required this.tooltip,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: color.withValues(alpha: 0.1),
-        shape: const CircleBorder(),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onTap,
-          child: Padding(
-            padding: EdgeInsets.all(6.r),
-            child: Icon(icon, size: 15.sp, color: color),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 Color _scale(int value, int max, {required bool higher}) {
   final ratio = value / max;

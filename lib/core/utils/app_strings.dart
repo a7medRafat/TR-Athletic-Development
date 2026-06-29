@@ -129,6 +129,8 @@ class AppStrings {
   static String get deleteSessionConfirm => 'delete_session_confirm'.tr();
   static String get editPreTrainingSession =>
       'edit_pre_training_session'.tr();
+  static String get editPostTrainingSession =>
+      'edit_post_training_session'.tr();
   static String get deleteUserData => 'delete_user_data'.tr();
   static String deleteUserDataConfirm(String name) =>
       'delete_user_data_confirm'.tr(namedArgs: {'name': name});

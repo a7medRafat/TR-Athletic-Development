@@ -10,11 +10,15 @@ import 'session_card_widget.dart';
 class PostTrainingListWidget extends StatelessWidget {
   final List<PostTrainingModel> sessions;
   final String Function(DateTime) fmt;
+  final void Function(PostTrainingModel session)? onEdit;
+  final void Function(PostTrainingModel session)? onDelete;
 
   const PostTrainingListWidget({
     super.key,
     required this.sessions,
     required this.fmt,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -25,7 +29,12 @@ class PostTrainingListWidget extends StatelessWidget {
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
       itemCount: sessions.length,
-      itemBuilder: (_, i) => PostCardWidget(session: sessions[i], fmt: fmt),
+      itemBuilder: (_, i) => PostCardWidget(
+        session: sessions[i],
+        fmt: fmt,
+        onEdit: onEdit,
+        onDelete: onDelete,
+      ),
     );
   }
 }
@@ -33,8 +42,16 @@ class PostTrainingListWidget extends StatelessWidget {
 class PostCardWidget extends StatelessWidget {
   final PostTrainingModel session;
   final String Function(DateTime) fmt;
+  final void Function(PostTrainingModel session)? onEdit;
+  final void Function(PostTrainingModel session)? onDelete;
 
-  const PostCardWidget({super.key, required this.session, required this.fmt});
+  const PostCardWidget({
+    super.key,
+    required this.session,
+    required this.fmt,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +59,28 @@ class PostCardWidget extends StatelessWidget {
     return SessionCardWidget(
       date: fmt(s.createdAt),
       accentColor: AppColors.accent,
+      trailing: (onEdit == null && onDelete == null)
+          ? null
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (onEdit != null)
+                  CardActionButton(
+                    icon: Icons.edit_outlined,
+                    color: AppColors.primary,
+                    tooltip: AppStrings.editSession,
+                    onTap: () => onEdit!(s),
+                  ),
+                if (onEdit != null && onDelete != null) SizedBox(width: 4.w),
+                if (onDelete != null)
+                  CardActionButton(
+                    icon: Icons.delete_outline_rounded,
+                    color: AppColors.error,
+                    tooltip: AppStrings.deleteSession,
+                    onTap: () => onDelete!(s),
+                  ),
+              ],
+            ),
       rows: [
         SessionRowData(
           icon: Icons.speed_rounded,

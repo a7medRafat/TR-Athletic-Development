@@ -155,3 +155,39 @@ class SessionCardWidget extends StatelessWidget {
     );
   }
 }
+
+/// Small round icon button for a SessionCardWidget's [trailing] slot (e.g.
+/// edit/delete actions). Shared by pre- and post-training session cards.
+class CardActionButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const CardActionButton({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: color.withValues(alpha: 0.1),
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.all(6.r),
+            child: Icon(icon, size: 15.sp, color: color),
+          ),
+        ),
+      ),
+    );
+  }
+}

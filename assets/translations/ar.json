@@ -102,6 +102,7 @@
   "delete_session": "حذف الجلسة",
   "delete_session_confirm": "هل أنت متأكد أنك تريد حذف هذه الجلسة؟ لا يمكن التراجع عن هذا الإجراء.",
   "edit_pre_training_session": "تعديل جلسة ما قبل التدريب",
+  "edit_post_training_session": "تعديل جلسة ما بعد التدريب",
   "delete_user_data": "حذف المستخدم",
   "delete_user_data_confirm": "سيؤدي هذا إلى حذف ملف {name} وكل سجل ما قبل وما بعد التدريب بشكل نهائي. لا يمكن التراجع عن هذا الإجراء.",
   "approve_confirm": "الموافقة على هذا المستخدم؟",

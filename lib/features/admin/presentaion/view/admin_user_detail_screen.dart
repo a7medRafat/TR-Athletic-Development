@@ -11,6 +11,7 @@ import '../../data/repositories/admin_repo.dart';
 import '../logic/admin_user_detail_cubit.dart';
 import '../logic/admin_user_detail_state.dart';
 import '../widgets/detail_skeleton_widget.dart';
+import '../widgets/edit_post_training_screen.dart';
 import '../widgets/edit_pre_training_screen.dart';
 import '../widgets/medical_history_tab_widget.dart';
 import '../widgets/overview_tab_widget.dart';
@@ -235,6 +236,19 @@ class _DetailView extends StatelessWidget {
                         PostTrainingListWidget(
                           sessions: state.postSessions,
                           fmt: _fmt,
+                          onEdit: (session) => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditPostTrainingScreen(
+                                session: session,
+                                onSave: cubit.updatePostTrainingSession,
+                              ),
+                            ),
+                          ),
+                          onDelete: (session) => _showDeleteSessionConfirm(
+                            context,
+                            () => cubit.deletePostTrainingSession(session.id!),
+                          ),
                         ),
                         WorkloadTab(postSessions: state.postSessions),
                         MedicalHistoryTabWidget(

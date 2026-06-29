@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../features/post_training/data/models/post_training_model.dart';
 import '../../../../features/pre_training/data/models/pre_training_model.dart';
 import '../../data/models/admin_user_model.dart';
 import '../../data/repositories/admin_repo.dart';
@@ -132,6 +133,47 @@ class AdminUserDetailCubit extends Cubit<AdminUserDetailState> {
   Future<AdminUserModel?> _refreshedUser() async {
     final result = await _repo.getUser(uid);
     return result.maybeWhen(success: (u) => u, orElse: () => state.user);
+  }
+
+  Future<void> updatePostTrainingSession(PostTrainingModel session) async {
+    final result = await _repo.updatePostTrainingSession(session);
+    String? error;
+    result.when(
+      success: (_) {},
+      failure: (e) => error = e.message ?? 'Failed to update session',
+    );
+    if (error != null) {
+      emit(state.copyWith(errorMessage: error));
+      return;
+    }
+
+    final updatedSessions = state.postSessions
+        .map((s) => s.id == session.id ? session : s)
+        .toList();
+    emit(state.copyWith(
+      postSessions: updatedSessions,
+      successMessage: 'Session updated successfully',
+    ));
+  }
+
+  Future<void> deletePostTrainingSession(String docId) async {
+    final result = await _repo.deletePostTrainingSession(docId);
+    String? error;
+    result.when(
+      success: (_) {},
+      failure: (e) => error = e.message ?? 'Failed to delete session',
+    );
+    if (error != null) {
+      emit(state.copyWith(errorMessage: error));
+      return;
+    }
+
+    final updatedSessions =
+        state.postSessions.where((s) => s.id != docId).toList();
+    emit(state.copyWith(
+      postSessions: updatedSessions,
+      successMessage: 'Session deleted successfully',
+    ));
   }
 }
 
