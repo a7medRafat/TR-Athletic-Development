@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/readiness_calculator.dart';
 import '../../data/models/admin_user_model.dart';
 import 'status_badge_widget.dart';
@@ -10,12 +11,14 @@ class UserListTileWidget extends StatelessWidget {
   final AdminUserModel user;
   final VoidCallback onTap;
   final VoidCallback onToggleStatus;
+  final VoidCallback onDeleteUser;
 
   const UserListTileWidget({
     super.key,
     required this.user,
     required this.onTap,
     required this.onToggleStatus,
+    required this.onDeleteUser,
   });
 
   @override
@@ -131,6 +134,29 @@ class UserListTileWidget extends StatelessWidget {
                   color: isDisabled ? AppColors.success : AppColors.error,
                 ),
               ),
+            ),
+            PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert_rounded,
+                  color: AppColors.textSecondary, size: 20.sp),
+              color: AppColors.surface,
+              onSelected: (_) => onDeleteUser(),
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.delete_outline_rounded,
+                          color: AppColors.error, size: 18.sp),
+                      SizedBox(width: 8.w),
+                      Text(
+                        AppStrings.deleteUserData,
+                        style: TextStyle(color: AppColors.error),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),

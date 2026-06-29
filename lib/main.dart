@@ -97,6 +97,14 @@ class AuthGate extends StatelessWidget {
 
             final data = docSnap.data?.data();
             if (data == null) {
+              // No Firestore profile for a signed-in user (e.g. an admin
+              // deleted their data, or the account predates one existing).
+              // Sign out instead of spinning forever — this flips
+              // authStateChanges() to null and the outer builder shows
+              // LoginScreen.
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                FirebaseAuth.instance.signOut();
+              });
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );

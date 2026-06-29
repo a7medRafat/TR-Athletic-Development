@@ -20,6 +20,7 @@ service cloud.firestore {
       allow read:   if isOwner(uid) || isAdmin();
       allow create: if isOwner(uid);
       allow update: if isOwner(uid) || isAdmin();
+      allow delete: if isAdmin();
     }
 
     // ── Pre-training sessions ──────────────────────────────────────────────
@@ -33,6 +34,7 @@ service cloud.firestore {
     match /post_training/{docId} {
       allow read:   if isOwner(resource.data.uid) || isAdmin();
       allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
+      allow delete: if isAdmin();
     }
   }
 }

@@ -91,6 +91,18 @@ class _AdminViewState extends State<_AdminView> {
     );
   }
 
+  void _showDeleteUserConfirm(String uid, String name, AdminUsersCubit cubit) {
+    AppConfirmDialog.show(
+      context,
+      title: AppStrings.deleteUserData,
+      message: AppStrings.deleteUserDataConfirm(name),
+      confirmLabel: AppStrings.confirm,
+      confirmColor: AppColors.error,
+      icon: Icons.delete_outline_rounded,
+      onConfirm: () => cubit.deleteUserCompletely(uid),
+    );
+  }
+
   void _goToDetail(String uid) {
     Navigator.push(
       context,
@@ -286,6 +298,11 @@ class _AdminViewState extends State<_AdminView> {
                   );
                 },
                 onTap: _goToDetail,
+                onDeleteUser: (user) => _showDeleteUserConfirm(
+                  user.uid,
+                  user.fullName.isNotEmpty ? user.fullName : user.email,
+                  cubit,
+                ),
               ),
               _StatsTab(state: state),
             ],
@@ -652,12 +669,14 @@ class _UsersTab extends StatelessWidget {
   final AdminUsersCubit cubit;
   final void Function(dynamic user) onToggle;
   final void Function(String uid) onTap;
+  final void Function(dynamic user) onDeleteUser;
 
   const _UsersTab({
     required this.state,
     required this.cubit,
     required this.onToggle,
     required this.onTap,
+    required this.onDeleteUser,
   });
 
   @override
@@ -757,6 +776,7 @@ class _UsersTab extends StatelessWidget {
                         user: user,
                         onTap: state.isLoading ? () {} : () => onTap(user.uid),
                         onToggleStatus: state.isLoading ? () {} : () => onToggle(user),
+                        onDeleteUser: state.isLoading ? () {} : () => onDeleteUser(user),
                       );
                     },
                   ),

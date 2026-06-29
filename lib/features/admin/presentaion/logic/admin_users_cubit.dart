@@ -86,6 +86,17 @@ class AdminUsersCubit extends Cubit<AdminUsersState> {
     );
   }
 
+  Future<void> deleteUserCompletely(String uid) async {
+    emit(state.copyWith(clearMessages: true));
+    final result = await _repo.deleteUserCompletely(uid);
+    result.when(
+      success: (_) => emit(state.copyWith(successMessage: 'User data deleted')),
+      failure: (e) => emit(
+        state.copyWith(errorMessage: e.message ?? 'Failed to delete user data'),
+      ),
+    );
+  }
+
   @override
   Future<void> close() {
     _sub?.cancel();

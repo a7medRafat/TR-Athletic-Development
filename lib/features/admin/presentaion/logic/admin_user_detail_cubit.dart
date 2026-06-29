@@ -85,37 +85,53 @@ class AdminUserDetailCubit extends Cubit<AdminUserDetailState> {
 
   Future<void> updatePreTrainingSession(PreTrainingModel session) async {
     final result = await _repo.updatePreTrainingSession(session);
+    String? error;
     result.when(
-      success: (_) {
-        final updated = state.preSessions
-            .map((s) => s.id == session.id ? session : s)
-            .toList();
-        emit(state.copyWith(
-          preSessions: updated,
-          successMessage: 'Session updated successfully',
-        ));
-      },
-      failure: (e) => emit(
-        state.copyWith(errorMessage: e.message ?? 'Failed to update session'),
-      ),
+      success: (_) {},
+      failure: (e) => error = e.message ?? 'Failed to update session',
     );
+    if (error != null) {
+      emit(state.copyWith(errorMessage: error));
+      return;
+    }
+
+    final updatedSessions = state.preSessions
+        .map((s) => s.id == session.id ? session : s)
+        .toList();
+    emit(state.copyWith(
+      user: await _refreshedUser(),
+      preSessions: updatedSessions,
+      successMessage: 'Session updated successfully',
+    ));
   }
 
   Future<void> deletePreTrainingSession(String docId) async {
-    final result = await _repo.deletePreTrainingSession(docId);
+    final result = await _repo.deletePreTrainingSession(uid, docId);
+    String? error;
     result.when(
-      success: (_) {
-        final updated =
-            state.preSessions.where((s) => s.id != docId).toList();
-        emit(state.copyWith(
-          preSessions: updated,
-          successMessage: 'Session deleted successfully',
-        ));
-      },
-      failure: (e) => emit(
-        state.copyWith(errorMessage: e.message ?? 'Failed to delete session'),
-      ),
+      success: (_) {},
+      failure: (e) => error = e.message ?? 'Failed to delete session',
     );
+    if (error != null) {
+      emit(state.copyWith(errorMessage: error));
+      return;
+    }
+
+    final updatedSessions =
+        state.preSessions.where((s) => s.id != docId).toList();
+    emit(state.copyWith(
+      user: await _refreshedUser(),
+      preSessions: updatedSessions,
+      successMessage: 'Session deleted successfully',
+    ));
+  }
+
+  // Deleting/editing a session can change users/{uid}.lastReadinessScore
+  // (re-derived server-side from whatever is now the latest session), so
+  // re-fetch the user rather than patching the stale in-memory copy.
+  Future<AdminUserModel?> _refreshedUser() async {
+    final result = await _repo.getUser(uid);
+    return result.maybeWhen(success: (u) => u, orElse: () => state.user);
   }
 }
 

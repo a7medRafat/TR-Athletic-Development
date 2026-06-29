@@ -129,11 +129,15 @@ class AppStrings {
   static String get deleteSessionConfirm => 'delete_session_confirm'.tr();
   static String get editPreTrainingSession =>
       'edit_pre_training_session'.tr();
+  static String get deleteUserData => 'delete_user_data'.tr();
+  static String deleteUserDataConfirm(String name) =>
+      'delete_user_data_confirm'.tr(namedArgs: {'name': name});
   static String get approveConfirm => 'approve_confirm'.tr();
   static String get rejectConfirm => 'reject_confirm'.tr();
   static String get disableConfirm => 'disable_confirm'.tr();
   static String get enableConfirm => 'enable_confirm'.tr();
   static String get confirmAction => 'confirm_action'.tr();
+  static String get confirm => 'confirm'.tr();
   static String get rejectionReason => 'rejection_reason'.tr();
   static String get rejectionReasonHint => 'rejection_reason_hint'.tr();
   static String get userApproved => 'user_approved'.tr();

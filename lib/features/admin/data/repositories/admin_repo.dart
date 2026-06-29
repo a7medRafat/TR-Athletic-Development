@@ -79,9 +79,19 @@ class AdminRepo {
     }
   }
 
-  Future<ApiResult<void>> deletePreTrainingSession(String docId) async {
+  Future<ApiResult<void>> deletePreTrainingSession(
+      String uid, String docId) async {
     try {
-      await _service.deletePreTrainingSession(docId);
+      await _service.deletePreTrainingSession(uid, docId);
+      return const ApiResult.success(null);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
+
+  Future<ApiResult<void>> deleteUserCompletely(String uid) async {
+    try {
+      await _service.deleteUserCompletely(uid);
       return const ApiResult.success(null);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));

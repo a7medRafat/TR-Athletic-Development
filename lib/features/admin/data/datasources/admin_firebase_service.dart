@@ -76,10 +76,41 @@ class AdminFirebaseService {
         .collection('pre_training')
         .doc(session.id)
         .update(session.toMap());
+    await _syncLastReadiness(session.uid);
   }
 
-  Future<void> deletePreTrainingSession(String docId) async {
+  Future<void> deletePreTrainingSession(String uid, String docId) async {
     await _firestore.collection('pre_training').doc(docId).delete();
+    await _syncLastReadiness(uid);
+  }
+
+  /// Re-derives users/{uid}.lastReadinessScore + lastSessionAt from whatever
+  /// is now the most recent pre_training doc, since editing/deleting a
+  /// session can change or remove what used to be the latest one.
+  Future<void> _syncLastReadiness(String uid) async {
+    final snap = await _firestore
+        .collection('pre_training')
+        .where('uid', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .get();
+
+    if (snap.docs.isEmpty) {
+      await _firestore.collection('users').doc(uid).update({
+        'lastReadinessScore': null,
+        'lastSessionAt': null,
+      });
+      return;
+    }
+
+    final latest = PreTrainingModel.fromMap(
+      snap.docs.first.data(),
+      snap.docs.first.id,
+    );
+    await _firestore.collection('users').doc(uid).update({
+      'lastReadinessScore': latest.readinessToTrain,
+      'lastSessionAt': Timestamp.fromDate(latest.createdAt),
+    });
   }
 
   Future<List<PostTrainingModel>> getPostTrainingSessions(String uid) async {
@@ -91,5 +122,28 @@ class AdminFirebaseService {
     return snap.docs
         .map((d) => PostTrainingModel.fromMap(d.data(), d.id))
         .toList();
+  }
+
+  /// Deletes a user's Firestore footprint entirely: every pre_training and
+  /// post_training doc plus the users/{uid} doc itself. Does NOT remove
+  /// their Firebase Auth account — the client SDK can only delete the
+  /// currently-signed-in user, never an arbitrary other uid.
+  Future<void> deleteUserCompletely(String uid) async {
+    final preSnap =
+        await _firestore.collection('pre_training').where('uid', isEqualTo: uid).get();
+    final postSnap =
+        await _firestore.collection('post_training').where('uid', isEqualTo: uid).get();
+
+    final allDocs = [...preSnap.docs, ...postSnap.docs];
+    const chunkSize = 450; // stay under Firestore's 500-write batch limit
+    for (var i = 0; i < allDocs.length; i += chunkSize) {
+      final batch = _firestore.batch();
+      for (final d in allDocs.skip(i).take(chunkSize)) {
+        batch.delete(d.reference);
+      }
+      await batch.commit();
+    }
+
+    await _firestore.collection('users').doc(uid).delete();
   }
 }
