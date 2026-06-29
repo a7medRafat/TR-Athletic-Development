@@ -11,11 +11,15 @@ import 'session_card_widget.dart';
 class PreTrainingListWidget extends StatelessWidget {
   final List<PreTrainingModel> sessions;
   final String Function(DateTime) fmt;
+  final void Function(PreTrainingModel session)? onEdit;
+  final void Function(PreTrainingModel session)? onDelete;
 
   const PreTrainingListWidget({
     super.key,
     required this.sessions,
     required this.fmt,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -26,7 +30,12 @@ class PreTrainingListWidget extends StatelessWidget {
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
       itemCount: sessions.length,
-      itemBuilder: (_, i) => PreCardWidget(session: sessions[i], fmt: fmt),
+      itemBuilder: (_, i) => PreCardWidget(
+        session: sessions[i],
+        fmt: fmt,
+        onEdit: onEdit,
+        onDelete: onDelete,
+      ),
     );
   }
 }
@@ -34,8 +43,16 @@ class PreTrainingListWidget extends StatelessWidget {
 class PreCardWidget extends StatelessWidget {
   final PreTrainingModel session;
   final String Function(DateTime) fmt;
+  final void Function(PreTrainingModel session)? onEdit;
+  final void Function(PreTrainingModel session)? onDelete;
 
-  const PreCardWidget({super.key, required this.session, required this.fmt});
+  const PreCardWidget({
+    super.key,
+    required this.session,
+    required this.fmt,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +61,28 @@ class PreCardWidget extends StatelessWidget {
     return SessionCardWidget(
       date: fmt(s.createdAt),
       accentColor: AppColors.primary,
+      trailing: (onEdit == null && onDelete == null)
+          ? null
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (onEdit != null)
+                  _CardActionButton(
+                    icon: Icons.edit_outlined,
+                    color: AppColors.primary,
+                    tooltip: AppStrings.editSession,
+                    onTap: () => onEdit!(s),
+                  ),
+                if (onEdit != null && onDelete != null) SizedBox(width: 4.w),
+                if (onDelete != null)
+                  _CardActionButton(
+                    icon: Icons.delete_outline_rounded,
+                    color: AppColors.error,
+                    tooltip: AppStrings.deleteSession,
+                    onTap: () => onDelete!(s),
+                  ),
+              ],
+            ),
       readinessBanner: ReadinessBannerWidget(
         score: s.readinessToTrain,
         color: readinessColor,
@@ -95,6 +134,39 @@ class PreCardWidget extends StatelessWidget {
             valueColor: AppColors.error,
           ),
       ],
+    );
+  }
+}
+
+class _CardActionButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const _CardActionButton({
+    required this.icon,
+    required this.color,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: color.withValues(alpha: 0.1),
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.all(6.r),
+            child: Icon(icon, size: 15.sp, color: color),
+          ),
+        ),
+      ),
     );
   }
 }

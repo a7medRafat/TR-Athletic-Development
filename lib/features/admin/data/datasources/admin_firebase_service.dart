@@ -71,6 +71,17 @@ class AdminFirebaseService {
         .toList();
   }
 
+  Future<void> updatePreTrainingSession(PreTrainingModel session) async {
+    await _firestore
+        .collection('pre_training')
+        .doc(session.id)
+        .update(session.toMap());
+  }
+
+  Future<void> deletePreTrainingSession(String docId) async {
+    await _firestore.collection('pre_training').doc(docId).delete();
+  }
+
   Future<List<PostTrainingModel>> getPostTrainingSessions(String uid) async {
     final snap = await _firestore
         .collection('post_training')

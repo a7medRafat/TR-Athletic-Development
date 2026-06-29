@@ -15,6 +15,18 @@ class MuscleInjuryEntry {
     this.daysLost,
   });
 
+  factory MuscleInjuryEntry.fromMap(Map<String, dynamic> map) =>
+      MuscleInjuryEntry(
+        muscleGroup: map['muscleGroup'] as String? ?? '',
+        side: map['side'] as String?,
+        date: map['date'] != null
+            ? DateTime.tryParse(map['date'] as String)
+            : null,
+        grade: map['grade'] as String?,
+        reinjury: map['reinjury'] as bool? ?? false,
+        daysLost: (map['daysLost'] as num?)?.toInt(),
+      );
+
   Map<String, dynamic> toMap() => {
         'muscleGroup': muscleGroup,
         if (side != null) 'side': side,
@@ -39,6 +51,17 @@ class JointInjuryEntry {
     this.surgeryRequired = false,
     this.reinjury = false,
   });
+
+  factory JointInjuryEntry.fromMap(Map<String, dynamic> map) =>
+      JointInjuryEntry(
+        injuryType: map['injuryType'] as String? ?? '',
+        side: map['side'] as String?,
+        date: map['date'] != null
+            ? DateTime.tryParse(map['date'] as String)
+            : null,
+        surgeryRequired: map['surgeryRequired'] as bool? ?? false,
+        reinjury: map['reinjury'] as bool? ?? false,
+      );
 
   Map<String, dynamic> toMap() => {
         'injuryType': injuryType,
@@ -65,6 +88,17 @@ class SurgeryEntry {
     this.returnToPlayDuration,
     this.currentStatus,
   });
+
+  factory SurgeryEntry.fromMap(Map<String, dynamic> map) => SurgeryEntry(
+        surgeryName: map['surgeryName'] as String? ?? '',
+        bodyArea: map['bodyArea'] as String?,
+        date: map['date'] != null
+            ? DateTime.tryParse(map['date'] as String)
+            : null,
+        surgeon: map['surgeon'] as String?,
+        returnToPlayDuration: map['returnToPlayDuration'] as String?,
+        currentStatus: map['currentStatus'] as String?,
+      );
 
   Map<String, dynamic> toMap() => {
         'surgeryName': surgeryName,
@@ -93,6 +127,33 @@ class MedicalHistory {
     this.chronicInjury = false,
     this.medications = false,
   });
+
+  factory MedicalHistory.fromMap(Map<String, dynamic> map) {
+    final currentStatus =
+        map['currentMedicalStatus'] as Map<String, dynamic>? ?? const {};
+    return MedicalHistory(
+      muscleInjuries: ((map['muscleInjuries'] as List?) ?? const [])
+          .map((e) => MuscleInjuryEntry.fromMap(e as Map<String, dynamic>))
+          .toList(),
+      jointInjuries: ((map['jointInjuries'] as List?) ?? const [])
+          .map((e) => JointInjuryEntry.fromMap(e as Map<String, dynamic>))
+          .toList(),
+      surgeries: ((map['surgeries'] as List?) ?? const [])
+          .map((e) => SurgeryEntry.fromMap(e as Map<String, dynamic>))
+          .toList(),
+      currentPain: currentStatus['currentPain'] as bool? ?? false,
+      chronicInjury: currentStatus['chronicInjury'] as bool? ?? false,
+      medications: currentStatus['medications'] as bool? ?? false,
+    );
+  }
+
+  bool get hasData =>
+      muscleInjuries.isNotEmpty ||
+      jointInjuries.isNotEmpty ||
+      surgeries.isNotEmpty ||
+      currentPain ||
+      chronicInjury ||
+      medications;
 
   String get riskProfile {
     final hasHighRisk = surgeries.isNotEmpty ||

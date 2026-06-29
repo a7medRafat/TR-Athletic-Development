@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_strings.dart';
 
 // ── Risk classification ────────────────────────────────────────────────────────
 
@@ -23,26 +24,26 @@ extension AcwrStatusX on AcwrStatus {
   String get label {
     switch (this) {
       case AcwrStatus.veryLow:
-        return 'Detraining';
+        return AppStrings.acwrStatusVeryLow;
       case AcwrStatus.optimal:
-        return 'Optimal';
+        return AppStrings.acwrStatusOptimal;
       case AcwrStatus.elevated:
-        return 'Monitor';
+        return AppStrings.acwrStatusElevated;
       case AcwrStatus.highRisk:
-        return 'High Risk';
+        return AppStrings.acwrStatusHighRisk;
     }
   }
 
   String get description {
     switch (this) {
       case AcwrStatus.veryLow:
-        return 'Training load is significantly below normal.';
+        return AppStrings.acwrDescVeryLow;
       case AcwrStatus.optimal:
-        return 'Current workload is balanced. Safe training zone.';
+        return AppStrings.acwrDescOptimal;
       case AcwrStatus.elevated:
-        return 'Higher than normal workload. Consider reducing intensity.';
+        return AppStrings.acwrDescElevated;
       case AcwrStatus.highRisk:
-        return 'Training load increased significantly. Very high injury risk.';
+        return AppStrings.acwrDescHighRisk;
     }
   }
 
@@ -81,9 +82,6 @@ class WorkloadMetrics {
 
   final AcwrStatus status;
 
-  /// Daily loads for the last 28 days, oldest → newest.
-  final List<DailyLoad> dailyLoads;
-
   /// Rolling acute load per day for last 28 days, oldest → newest.
   final List<double> acuteHistory;
 
@@ -113,7 +111,6 @@ class WorkloadMetrics {
     required this.chronicLoad,
     required this.acwr,
     required this.status,
-    required this.dailyLoads,
     required this.acuteHistory,
     required this.chronicHistory,
     required this.acwrHistory,
@@ -133,7 +130,6 @@ class WorkloadMetrics {
         chronicLoad: 0,
         acwr: 0,
         status: AcwrStatus.veryLow,
-        dailyLoads: [],
         acuteHistory: [],
         chronicHistory: [],
         acwrHistory: [],

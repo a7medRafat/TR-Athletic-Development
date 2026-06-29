@@ -111,7 +111,6 @@ class WorkloadCalculator {
       chronicLoad: chronicLoad,
       acwr: currentAcwr,
       status: _classify(isAcuteReady && isChronicReady ? currentAcwr : 0),
-      dailyLoads: last28,
       acuteHistory: acuteHistory,
       chronicHistory: chronicHistory,
       acwrHistory: acwrHistory,

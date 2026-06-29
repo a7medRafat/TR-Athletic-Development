@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -8,14 +9,17 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../features/post_training/data/models/post_training_model.dart';
 import '../../../../features/workload/data/models/workload_models.dart';
+import '../../../../features/workload/domain/monthly_load_calculator.dart';
 import '../../../../features/workload/domain/workload_calculator.dart';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const _monthAbbr = [
-  'Jan','Feb','Mar','Apr','May','Jun',
-  'Jul','Aug','Sep','Oct','Nov','Dec',
-];
+List<String> get _monthAbbr => [
+      'month_abbr_jan'.tr(), 'month_abbr_feb'.tr(), 'month_abbr_mar'.tr(),
+      'month_abbr_apr'.tr(), 'month_abbr_may'.tr(), 'month_abbr_jun'.tr(),
+      'month_abbr_jul'.tr(), 'month_abbr_aug'.tr(), 'month_abbr_sep'.tr(),
+      'month_abbr_oct'.tr(), 'month_abbr_nov'.tr(), 'month_abbr_dec'.tr(),
+    ];
 
 String _fmtDate(DateTime d) => '${_monthAbbr[d.month - 1]} ${d.day}';
 
@@ -49,7 +53,7 @@ class WorkloadTab extends StatelessWidget {
           SizedBox(height: 14.h),
           _MetricCardsGrid(metrics: metrics),
           SizedBox(height: 20.h),
-          _DailyLoadCard(dailyLoads: metrics.dailyLoads),
+          _DailyLoadCard(postSessions: postSessions),
           SizedBox(height: 14.h),
           _ChartCard(
             title: AppStrings.acuteVsChronic,
@@ -144,17 +148,13 @@ class _InsufficientDataBanner extends StatelessWidget {
   });
 
   String get _title {
-    if (!isAcuteReady) return 'Collecting Data (< 7 days)';
-    return 'Collecting Data (< 4 weeks)';
+    if (!isAcuteReady) return AppStrings.workloadCollectingShort;
+    return AppStrings.workloadCollectingLong;
   }
 
   String get _message {
-    if (!isAcuteReady) {
-      return 'Acute Load requires 7 days of sessions. '
-          'Chronic Load requires 4 full weeks (28 days).';
-    }
-    return 'Acute Load is ready. '
-        'Chronic Load and ACWR will be available after 4 weeks (28 days) of data.';
+    if (!isAcuteReady) return AppStrings.workloadPendingAcuteMessage;
+    return AppStrings.workloadPendingChronicMessage;
   }
 
   @override
@@ -238,7 +238,7 @@ class _MetricCardsGrid extends StatelessWidget {
           unit: metrics.isAcuteReady ? AppStrings.arbitraryUnits : '',
           icon: Icons.flash_on_rounded,
           color: metrics.isAcuteReady ? AppColors.primary : AppColors.textSecondary,
-          subtitle: metrics.isAcuteReady ? null : '< 7 days data',
+          subtitle: metrics.isAcuteReady ? null : AppStrings.workloadNeeds7Days,
         ),
         _MetricCard(
           label: AppStrings.chronicLoad,
@@ -248,7 +248,7 @@ class _MetricCardsGrid extends StatelessWidget {
           unit: metrics.isChronicReady ? AppStrings.arbitraryUnits : '',
           icon: Icons.timeline_rounded,
           color: metrics.isChronicReady ? AppColors.accent : AppColors.textSecondary,
-          subtitle: metrics.isChronicReady ? null : '< 4 weeks data',
+          subtitle: metrics.isChronicReady ? null : AppStrings.workloadNeeds4Weeks,
         ),
         _MetricCard(
           label: AppStrings.acwr,
@@ -262,7 +262,7 @@ class _MetricCardsGrid extends StatelessWidget {
               : AppColors.textSecondary,
           subtitle: (metrics.isAcuteReady && metrics.isChronicReady)
               ? null
-              : '< 4 weeks data',
+              : AppStrings.workloadNeeds4Weeks,
         ),
         _MetricCard(
           label: AppStrings.workloadStatus,
@@ -384,33 +384,45 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-// ── Daily Load Card with week/month filter ────────────────────────────────────
-
-enum _LoadRange { week, month }
+// ── Daily Training Load Card: month + week-1..4 filter ───────────────────────
 
 class _DailyLoadCard extends StatefulWidget {
-  final List<DailyLoad> dailyLoads; // always 28 entries, newest last
+  final List<PostTrainingModel> postSessions;
 
-  const _DailyLoadCard({required this.dailyLoads});
+  const _DailyLoadCard({required this.postSessions});
 
   @override
   State<_DailyLoadCard> createState() => _DailyLoadCardState();
 }
 
 class _DailyLoadCardState extends State<_DailyLoadCard> {
-  _LoadRange _range = _LoadRange.month;
+  final _calc = MonthlyLoadCalculator();
+  late final List<DateTime> _months;
+  late DateTime _selectedMonth;
+  int _selectedWeek = 0;
 
-  List<DailyLoad> get _filtered => _range == _LoadRange.week
-      ? widget.dailyLoads.sublist(21) // last 7 of 28
-      : widget.dailyLoads;
+  @override
+  void initState() {
+    super.initState();
+    _months = _calc.availableMonths(widget.postSessions, DateTime.now());
+    _selectedMonth = _months.last; // current month, newest in the list
+  }
 
-  String get _subtitle =>
-      _range == _LoadRange.week ? 'This Week (7 days)' : 'This Month (28 days)';
+  void _changeMonth(DateTime month) {
+    setState(() {
+      _selectedMonth = month;
+      _selectedWeek = 0; // reset to Week 1 whenever the month changes
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final monthDays = _calc.dailyLoadsForMonth(widget.postSessions, _selectedMonth);
+    final weeks = _calc.splitIntoWeeks(monthDays);
+    final selectedDays = weeks[_selectedWeek];
+
     return Container(
-      padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 10.h),
+      padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 12.h),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14.r),
@@ -425,79 +437,116 @@ class _DailyLoadCardState extends State<_DailyLoadCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppStrings.dailyLoadChart,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      _subtitle,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              _ArrowFilterToggle(
-                range: _range,
-                onChanged: (r) => setState(() => _range = r),
-              ),
-            ],
+          Text(
+            AppStrings.dailyLoadChart,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
-          SizedBox(height: 12.h),
-          _DailyLoadBarChart(dailyLoads: _filtered),
+          SizedBox(height: 10.h),
+          _MonthSelector(
+            months: _months,
+            selected: _selectedMonth,
+            onChanged: _changeMonth,
+          ),
+          SizedBox(height: 10.h),
+          _WeekChipsRow(
+            selected: _selectedWeek,
+            onChanged: (i) => setState(() => _selectedWeek = i),
+          ),
+          SizedBox(height: 6.h),
+          Text(
+            _fmtWeekRange(selectedDays.first.date, selectedDays.last.date),
+            style: TextStyle(fontSize: 10.sp, color: AppColors.textSecondary),
+          ),
+          SizedBox(height: 10.h),
+          _DailyLoadBarChart(dailyLoads: selectedDays),
         ],
       ),
     );
   }
 }
 
-class _ArrowFilterToggle extends StatelessWidget {
-  final _LoadRange range;
-  final ValueChanged<_LoadRange> onChanged;
+String _fmtMonthYear(DateTime m) => '${_monthAbbr[m.month - 1]} ${m.year}';
 
-  const _ArrowFilterToggle({required this.range, required this.onChanged});
+String _fmtWeekRange(DateTime start, DateTime end) =>
+    '${_monthAbbr[start.month - 1]} ${start.day}–${end.day}, ${start.year}';
+
+// ── Month selector (prev/next arrows + tap-to-pick list) ──────────────────────
+
+class _MonthSelector extends StatelessWidget {
+  final List<DateTime> months; // oldest → newest
+  final DateTime selected;
+  final ValueChanged<DateTime> onChanged;
+
+  const _MonthSelector({
+    required this.months,
+    required this.selected,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isWeek = range == _LoadRange.week;
+    final index = months.indexWhere(
+      (m) => m.year == selected.year && m.month == selected.month,
+    );
+    final hasPrev = index > 0;
+    final hasNext = index >= 0 && index < months.length - 1;
+
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         _ArrowBtn(
           icon: Icons.chevron_left_rounded,
-          active: isWeek,
-          onTap: () => onChanged(_LoadRange.week),
-          tooltip: 'This Week',
+          enabled: hasPrev,
+          onTap: () => onChanged(months[index - 1]),
+          tooltip: AppStrings.previousMonth,
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 6.w),
-          child: Text(
-            isWeek ? 'Week' : 'Month',
-            style: TextStyle(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
+        Expanded(
+          child: Center(
+            child: PopupMenuButton<DateTime>(
+              initialValue: selected,
+              onSelected: onChanged,
+              itemBuilder: (context) => months.reversed
+                  .map(
+                    (m) => PopupMenuItem(value: m, child: Text(_fmtMonthYear(m))),
+                  )
+                  .toList(),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceVariant,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _fmtMonthYear(selected),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(width: 4.w),
+                    Icon(
+                      Icons.expand_more_rounded,
+                      size: 16.sp,
+                      color: AppColors.textSecondary,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
         _ArrowBtn(
           icon: Icons.chevron_right_rounded,
-          active: !isWeek,
-          onTap: () => onChanged(_LoadRange.month),
-          tooltip: 'This Month',
+          enabled: hasNext,
+          onTap: () => onChanged(months[index + 1]),
+          tooltip: AppStrings.nextMonth,
         ),
       ],
     );
@@ -506,13 +555,13 @@ class _ArrowFilterToggle extends StatelessWidget {
 
 class _ArrowBtn extends StatelessWidget {
   final IconData icon;
-  final bool active;
+  final bool enabled;
   final VoidCallback onTap;
   final String tooltip;
 
   const _ArrowBtn({
     required this.icon,
-    required this.active,
+    required this.enabled,
     required this.onTap,
     required this.tooltip,
   });
@@ -522,12 +571,12 @@ class _ArrowBtn extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: enabled ? onTap : null,
         child: Container(
           width: 28.r,
           height: 28.r,
           decoration: BoxDecoration(
-            color: active
+            color: enabled
                 ? AppColors.primary.withValues(alpha: 0.12)
                 : AppColors.surfaceVariant,
             borderRadius: BorderRadius.circular(6.r),
@@ -535,7 +584,71 @@ class _ArrowBtn extends StatelessWidget {
           child: Icon(
             icon,
             size: 18.sp,
-            color: active ? AppColors.primary : AppColors.textSecondary,
+            color: enabled ? AppColors.primary : AppColors.textHint,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Week 1–4 chip selector ─────────────────────────────────────────────────────
+
+class _WeekChipsRow extends StatelessWidget {
+  final int selected;
+  final ValueChanged<int> onChanged;
+
+  const _WeekChipsRow({required this.selected, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(4, (i) {
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: i < 3 ? 4.w : 0),
+            child: _WeekChip(
+              label: AppStrings.weekLabel(i + 1),
+              selected: selected == i,
+              onTap: () => onChanged(i),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _WeekChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _WeekChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(vertical: 4.h),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.surface,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: selected ? AppColors.primary : AppColors.border),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 9.sp,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : AppColors.textSecondary,
           ),
         ),
       ),
@@ -598,7 +711,7 @@ class _ChartCard extends StatelessWidget {
 // ── Daily Load Bar Chart ──────────────────────────────────────────────────────
 
 class _DailyLoadBarChart extends StatelessWidget {
-  final List<DailyLoad> dailyLoads;
+  final List<DailyLoad> dailyLoads; // one week, oldest → newest
 
   const _DailyLoadBarChart({required this.dailyLoads});
 
@@ -613,25 +726,57 @@ class _DailyLoadBarChart extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: 100.h,
+          height: 132.h,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: dailyLoads.map((d) {
+              final hasData = d.load > 0;
               final ratio = maxLoad > 0 ? d.load / maxLoad : 0.0;
-              final barColor = d.load > 0 ? AppColors.primary : AppColors.border;
+              final barColor = hasData ? AppColors.primary : AppColors.border;
               return Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 1.w),
+                  padding: EdgeInsets.symmetric(horizontal: 2.w),
                   child: Tooltip(
-                    message:
-                        '${_fmtDate(d.date)}: ${d.load.toStringAsFixed(0)} AU',
-                    child: Container(
-                      height: math.max(ratio * 90.h, d.load > 0 ? 4.h : 1.h),
-                      decoration: BoxDecoration(
-                        color: barColor,
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(3.r),
-                        ),
+                    message: hasData
+                        ? '${_fmtDate(d.date)}: ${d.load.toStringAsFixed(0)} ${AppStrings.arbitraryUnits}'
+                        : '${_fmtDate(d.date)}: ${AppStrings.noData}',
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            hasData ? d.load.toStringAsFixed(0) : '–',
+                            style: TextStyle(
+                              fontSize: 8.sp,
+                              fontWeight: FontWeight.w600,
+                              color: hasData
+                                  ? AppColors.textPrimary
+                                  : AppColors.textHint,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4.h),
+                          Container(
+                            height: math.max(ratio * 80.h, hasData ? 4.h : 1.h),
+                            decoration: BoxDecoration(
+                              color: barColor,
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(3.r),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            '${d.date.day}',
+                            style: TextStyle(
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -640,24 +785,13 @@ class _DailyLoadBarChart extends StatelessWidget {
             }).toList(),
           ),
         ),
-        SizedBox(height: 4.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              _fmtDate(dailyLoads.first.date),
-              style: TextStyle(fontSize: 9.sp, color: AppColors.textSecondary),
-            ),
-            Text(
-              _fmtDate(dailyLoads.last.date),
-              style: TextStyle(fontSize: 9.sp, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
         if (maxLoad > 0) ...[
-          SizedBox(height: 2.h),
+          SizedBox(height: 6.h),
           Text(
-            'Max: ${maxLoad.toStringAsFixed(0)} AU',
+            AppStrings.workloadMaxLabel(
+              maxLoad.toStringAsFixed(0),
+              AppStrings.arbitraryUnits,
+            ),
             style: TextStyle(
               fontSize: 9.sp,
               color: AppColors.textSecondary,
@@ -700,9 +834,9 @@ class _DualLineChart extends StatelessWidget {
         SizedBox(height: 8.h),
         Row(
           children: [
-            _LegendDot(color: AppColors.primary, label: 'Acute (7d)'),
+            _LegendDot(color: AppColors.primary, label: AppStrings.acuteLegend),
             SizedBox(width: 16.w),
-            _LegendDot(color: AppColors.accent, label: 'Chronic (28d)'),
+            _LegendDot(color: AppColors.accent, label: AppStrings.chronicLegend),
           ],
         ),
       ],
@@ -999,12 +1133,14 @@ class _SummaryGrid extends StatelessWidget {
             children: [
               _SummaryStat(
                 label: AppStrings.peakAcute,
-                value: '${metrics.peakAcute.toStringAsFixed(0)} AU',
+                value:
+                    '${metrics.peakAcute.toStringAsFixed(0)} ${AppStrings.arbitraryUnits}',
                 color: AppColors.primary,
               ),
               _SummaryStat(
                 label: AppStrings.peakChronic,
-                value: '${metrics.peakChronic.toStringAsFixed(0)} AU',
+                value:
+                    '${metrics.peakChronic.toStringAsFixed(0)} ${AppStrings.arbitraryUnits}',
                 color: AppColors.accent,
               ),
               _SummaryStat(
@@ -1014,7 +1150,8 @@ class _SummaryGrid extends StatelessWidget {
               ),
               _SummaryStat(
                 label: AppStrings.avgDailyLoad,
-                value: '${metrics.avgDailyLoad.toStringAsFixed(0)} AU',
+                value:
+                    '${metrics.avgDailyLoad.toStringAsFixed(0)} ${AppStrings.arbitraryUnits}',
                 color: AppColors.textSecondary,
               ),
             ],

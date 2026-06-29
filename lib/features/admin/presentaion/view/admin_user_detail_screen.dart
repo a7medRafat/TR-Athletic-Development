@@ -11,6 +11,8 @@ import '../../data/repositories/admin_repo.dart';
 import '../logic/admin_user_detail_cubit.dart';
 import '../logic/admin_user_detail_state.dart';
 import '../widgets/detail_skeleton_widget.dart';
+import '../widgets/edit_pre_training_screen.dart';
+import '../widgets/medical_history_tab_widget.dart';
 import '../widgets/overview_tab_widget.dart';
 import '../widgets/player_profile_header_widget.dart';
 import '../widgets/post_training_list_widget.dart';
@@ -90,6 +92,21 @@ class _DetailView extends StatelessWidget {
     );
   }
 
+  void _showDeleteSessionConfirm(
+    BuildContext context,
+    VoidCallback onConfirm,
+  ) {
+    AppConfirmDialog.show(
+      context,
+      title: AppStrings.deleteSession,
+      message: AppStrings.deleteSessionConfirm,
+      confirmLabel: AppStrings.deleteSession,
+      confirmColor: AppColors.error,
+      icon: Icons.delete_outline_rounded,
+      onConfirm: onConfirm,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AdminUserDetailCubit, AdminUserDetailState>(
@@ -119,7 +136,7 @@ class _DetailView extends StatelessWidget {
         }
 
         return DefaultTabController(
-          length: 4,
+          length: 5,
           child: Scaffold(
             backgroundColor: AppColors.background,
             body: NestedScrollView(
@@ -180,11 +197,14 @@ class _DetailView extends StatelessWidget {
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w600,
                       ),
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
                       tabs: [
                         const Tab(text: 'Overview'),
                         Tab(text: AppStrings.preTrainingSessions),
                         Tab(text: AppStrings.postTrainingSessions),
                         Tab(text: AppStrings.workloadMonitoring),
+                        Tab(text: AppStrings.medicalHistory),
                       ],
                     ),
                   ),
@@ -198,12 +218,28 @@ class _DetailView extends StatelessWidget {
                         PreTrainingListWidget(
                           sessions: state.preSessions,
                           fmt: _fmt,
+                          onEdit: (session) => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditPreTrainingScreen(
+                                session: session,
+                                onSave: cubit.updatePreTrainingSession,
+                              ),
+                            ),
+                          ),
+                          onDelete: (session) => _showDeleteSessionConfirm(
+                            context,
+                            () => cubit.deletePreTrainingSession(session.id!),
+                          ),
                         ),
                         PostTrainingListWidget(
                           sessions: state.postSessions,
                           fmt: _fmt,
                         ),
                         WorkloadTab(postSessions: state.postSessions),
+                        MedicalHistoryTabWidget(
+                          medicalHistory: state.user?.medicalHistory,
+                        ),
                       ],
                     ),
             ),

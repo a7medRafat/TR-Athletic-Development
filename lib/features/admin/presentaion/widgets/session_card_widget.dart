@@ -26,6 +26,7 @@ class SessionCardWidget extends StatelessWidget {
   final Color accentColor;
   final List<SessionRowData> rows;
   final Widget? readinessBanner;
+  final Widget? trailing;
 
   const SessionCardWidget({
     super.key,
@@ -33,6 +34,7 @@ class SessionCardWidget extends StatelessWidget {
     required this.accentColor,
     required this.rows,
     this.readinessBanner,
+    this.trailing,
   });
 
   @override
@@ -74,6 +76,8 @@ class SessionCardWidget extends StatelessWidget {
                     color: accentColor,
                   ),
                 ),
+                const Spacer(),
+                ?trailing,
               ],
             ),
           ),
@@ -145,7 +149,7 @@ class SessionCardWidget extends StatelessWidget {
                   .toList(),
             ),
           ),
-          if (readinessBanner != null) readinessBanner!,
+          ?readinessBanner,
         ],
       ),
     );

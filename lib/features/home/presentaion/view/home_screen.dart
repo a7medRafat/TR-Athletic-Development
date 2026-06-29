@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_drawer_footer_widget.dart';
 import '../../../post_training/presentaion/view/post_training_screen.dart';
 import '../../../pre_training/presentaion/view/pre_training_screen.dart';
 import '../../../settings/data/models/user_profile_model.dart';
@@ -107,7 +108,7 @@ class _HomeView extends StatelessWidget {
               builder: (ctx) => GestureDetector(
                 onTap: () => Scaffold.of(ctx).openDrawer(),
                 child: Padding(
-                  padding: EdgeInsets.only(left: 16.w),
+                  padding: EdgeInsetsDirectional.only(start: 16.w),
                   child: CircleAvatar(
                     backgroundColor: AppColors.primary,
                     radius: 18.r,
@@ -493,14 +494,7 @@ class _AppDrawer extends StatelessWidget {
               },
             ),
             const Spacer(),
-            Padding(
-              padding: EdgeInsets.all(16.r),
-              child: Text(
-                AppStrings.appName,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11.sp, color: AppColors.textHint),
-              ),
-            ),
+            const AppDrawerFooterWidget(),
           ],
         ),
       ),

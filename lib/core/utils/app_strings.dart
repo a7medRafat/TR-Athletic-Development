@@ -5,6 +5,8 @@ class AppStrings {
 
   // App
   static String get appName => 'app_name'.tr();
+  static String appVersion(String version) =>
+      'app_version'.tr(namedArgs: {'version': version});
 
   // Auth
   static String get email => 'email'.tr();
@@ -122,6 +124,11 @@ class AppStrings {
   static String get lastActivity => 'last_activity'.tr();
   static String get noHistory => 'no_history'.tr();
   static String get submittedToday => 'submitted_today'.tr();
+  static String get editSession => 'edit_session'.tr();
+  static String get deleteSession => 'delete_session'.tr();
+  static String get deleteSessionConfirm => 'delete_session_confirm'.tr();
+  static String get editPreTrainingSession =>
+      'edit_pre_training_session'.tr();
   static String get approveConfirm => 'approve_confirm'.tr();
   static String get rejectConfirm => 'reject_confirm'.tr();
   static String get disableConfirm => 'disable_confirm'.tr();
@@ -296,6 +303,15 @@ class AppStrings {
   static String get statusLimited => 'status_limited'.tr();
   static String get statusUnknown => 'status_unknown'.tr();
 
+  // Medical History tab (admin)
+  static String get medicalHistory => 'medical_history'.tr();
+  static String get riskProfile => 'risk_profile'.tr();
+  static String get riskLow => 'risk_low'.tr();
+  static String get riskModerate => 'risk_moderate'.tr();
+  static String get riskHigh => 'risk_high'.tr();
+  static String get noMedicalHistory => 'no_medical_history'.tr();
+  static String get noneReported => 'none_reported'.tr();
+
   // Workload Monitoring
   static String get workloadMonitoring => 'workload_monitoring'.tr();
   static String get acuteLoad => 'acute_load'.tr();
@@ -315,6 +331,31 @@ class AppStrings {
   static String get safeZone => 'safe_zone'.tr();
   static String get last28Days => 'last_28_days'.tr();
   static String get arbitraryUnits => 'arbitrary_units'.tr();
+  static String get previousMonth => 'previous_month'.tr();
+  static String get nextMonth => 'next_month'.tr();
+  static String weekLabel(int number) =>
+      'week_label'.tr(namedArgs: {'number': '$number'});
+  static String get acwrStatusVeryLow => 'acwr_status_very_low'.tr();
+  static String get acwrStatusOptimal => 'acwr_status_optimal'.tr();
+  static String get acwrStatusElevated => 'acwr_status_elevated'.tr();
+  static String get acwrStatusHighRisk => 'acwr_status_high_risk'.tr();
+  static String get acwrDescVeryLow => 'acwr_desc_very_low'.tr();
+  static String get acwrDescOptimal => 'acwr_desc_optimal'.tr();
+  static String get acwrDescElevated => 'acwr_desc_elevated'.tr();
+  static String get acwrDescHighRisk => 'acwr_desc_high_risk'.tr();
+  static String get workloadCollectingShort =>
+      'workload_collecting_short'.tr();
+  static String get workloadCollectingLong => 'workload_collecting_long'.tr();
+  static String get workloadPendingAcuteMessage =>
+      'workload_pending_acute_message'.tr();
+  static String get workloadPendingChronicMessage =>
+      'workload_pending_chronic_message'.tr();
+  static String get workloadNeeds7Days => 'workload_needs_7_days'.tr();
+  static String get workloadNeeds4Weeks => 'workload_needs_4_weeks'.tr();
+  static String get acuteLegend => 'acute_legend'.tr();
+  static String get chronicLegend => 'chronic_legend'.tr();
+  static String workloadMaxLabel(String value, String unit) =>
+      'workload_max_label'.tr(namedArgs: {'value': value, 'unit': unit});
 
   // Stats with params
   static String thresholdLabel(int value) =>

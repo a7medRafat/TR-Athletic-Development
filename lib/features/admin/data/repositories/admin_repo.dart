@@ -68,4 +68,23 @@ class AdminRepo {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
+
+  Future<ApiResult<void>> updatePreTrainingSession(
+      PreTrainingModel session) async {
+    try {
+      await _service.updatePreTrainingSession(session);
+      return const ApiResult.success(null);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
+
+  Future<ApiResult<void>> deletePreTrainingSession(String docId) async {
+    try {
+      await _service.deletePreTrainingSession(docId);
+      return const ApiResult.success(null);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
 }

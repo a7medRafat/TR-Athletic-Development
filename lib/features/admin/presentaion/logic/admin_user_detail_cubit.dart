@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../features/pre_training/data/models/pre_training_model.dart';
 import '../../data/models/admin_user_model.dart';
 import '../../data/repositories/admin_repo.dart';
 import 'admin_user_detail_state.dart';
@@ -81,6 +82,41 @@ class AdminUserDetailCubit extends Cubit<AdminUserDetailState> {
       ),
     );
   }
+
+  Future<void> updatePreTrainingSession(PreTrainingModel session) async {
+    final result = await _repo.updatePreTrainingSession(session);
+    result.when(
+      success: (_) {
+        final updated = state.preSessions
+            .map((s) => s.id == session.id ? session : s)
+            .toList();
+        emit(state.copyWith(
+          preSessions: updated,
+          successMessage: 'Session updated successfully',
+        ));
+      },
+      failure: (e) => emit(
+        state.copyWith(errorMessage: e.message ?? 'Failed to update session'),
+      ),
+    );
+  }
+
+  Future<void> deletePreTrainingSession(String docId) async {
+    final result = await _repo.deletePreTrainingSession(docId);
+    result.when(
+      success: (_) {
+        final updated =
+            state.preSessions.where((s) => s.id != docId).toList();
+        emit(state.copyWith(
+          preSessions: updated,
+          successMessage: 'Session deleted successfully',
+        ));
+      },
+      failure: (e) => emit(
+        state.copyWith(errorMessage: e.message ?? 'Failed to delete session'),
+      ),
+    );
+  }
 }
 
 class AdminUserModelExt {
@@ -102,5 +138,6 @@ class AdminUserModelExt {
         weight: u.weight,
         height: u.height,
         gender: u.gender,
+        medicalHistory: u.medicalHistory,
       );
 }

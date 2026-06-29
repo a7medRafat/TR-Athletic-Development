@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../register/data/models/medical_models.dart';
+
 class AdminUserModel {
   final String uid;
   final String email;
@@ -17,6 +19,7 @@ class AdminUserModel {
   final double? weight;
   final double? height;
   final String? gender;
+  final MedicalHistory? medicalHistory;
 
   const AdminUserModel({
     required this.uid,
@@ -35,6 +38,7 @@ class AdminUserModel {
     this.weight,
     this.height,
     this.gender,
+    this.medicalHistory,
   });
 
   bool get isAdmin => role == 'admin';
@@ -72,6 +76,9 @@ class AdminUserModel {
       weight: (map['weight'] as num?)?.toDouble(),
       height: (map['height'] as num?)?.toDouble(),
       gender: map['gender'] as String?,
+      medicalHistory: map['medicalHistory'] != null
+          ? MedicalHistory.fromMap(map['medicalHistory'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
